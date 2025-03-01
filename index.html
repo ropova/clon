@@ -1,0 +1,3837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindSpace</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .databases-list {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 300px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 1rem;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 0 12px 12px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .databases-list h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #718096;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .database-list-content {
+            flex-grow: 1;
+        }
+
+        .database-item {
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .database-item:hover {
+            background: #edf2f7;
+        }
+
+        .database-item.active {
+            background: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .database-name {
+            flex-grow: 1;
+            padding: 0.3rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            cursor: text;
+            font-size: 20px;
+        }
+
+        .database-name:focus {
+            outline: none;
+            background: #edf2f7;
+            box-shadow: 0 0 0 2px #63b3ed;
+        }
+
+        .expand-icon {
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .table-item, .view-item {
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 0.2rem;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            gap: 1rem!important;
+        }
+
+        .table-item:hover, .view-item:hover {
+            background: #edf2f7;
+        }
+
+        .table-item.active, .view-item.active {
+            background: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .table-item .delete-btn, .view-item .delete-btn {
+            display: none;
+            margin-left: 0.5rem;
+        }
+
+        .table-item:hover .delete-btn, .view-item:hover .delete-btn {
+            display: inline-block;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            font-size: 0.6rem;
+            cursor: pointer;
+            color: #4a5568;
+            padding: 0.25rem;
+            border-radius: 4px;
+            line-height: 1;
+            transition: background 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            background: #edf2f7;
+        }
+
+        .tables-list, .views-list {
+            margin-bottom: 0.75rem;
+            display: none;
+            padding-left: 1.5rem; /* Aumenta el padding izquierdo para mover las listas hacia la derecha */
+        }
+        
+        .tables-list.expanded, .views-list.expanded {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.2s ease;
+            gap: 0.5rem; /* Añade un espacio de 0.5rem entre el ícono y el texto */
+        }
+        
+        .section-header:hover {
+            background: #edf2f7;
+        }
+        
+        /* Estilo específico para el contenedor del ícono y texto dentro de .section-header */
+        .section-header > div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Asegura un espacio de 0.5rem entre el ícono y el texto */
+        }
+
+        .logo {
+            margin-top: auto;
+            padding: 0.75rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo img {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .main-content {
+            margin-left: 300px;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            border-radius: 12px 0 0 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .field-type-selector {
+            position: absolute;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .database-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding: 0.4rem 0.75rem;
+            width: 100%;
+            background: transparent;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+            display: inline-block;
+            cursor: text;
+        }
+        
+        .database-title[contenteditable="true"] {
+            background: #edf2f7;
+            outline: none;
+            box-shadow: 0 0 0 2px #63b3ed;
+        }
+        
+        .database-title:hover {
+            background: #edf2f7;
+        }
+
+        .toolbar {
+            display: none;
+            margin-bottom: 1rem;
+            gap: 0.75rem;
+            align-items: center;
+            background: #ffffff;
+            padding: 0.75rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .toolbar-table-only {
+            display: flex; /* Siempre visible cuando la toolbar está activa */
+        }
+
+        .toolbar-table-only.table-visible {
+            display: flex;
+        }
+
+        .field-type-option {
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .field-type-option:hover {
+            background: #edf2f7;
+        }
+
+        button, select, input, .field-type-option {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            background: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #4a5568;
+            display: flex;
+            gap: 0.4rem;
+            font-size: 10px;
+        }
+
+        button:hover {
+            background: #edf2f7;
+        }
+
+        .database-table {
+            width: max-content;
+            max-width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .database-table th, .database-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .database-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            user-select: none;
+            z-index: 1;
+            position: sticky;
+            top: 0;
+            color: #4a5568;
+        }
+
+        .database-table td {
+            background: #ffffff;
+            transition: background 0.2s ease;
+        }
+
+/* Establece un ancho fijo para la primera y última columna */
+.database-table th:first-child,
+.database-table th:last-child,
+.database-table td:first-child,
+.database-table td:last-child {
+    width: 30px !important; /* Ajusta este valor según tus necesidades */
+}
+
+        .edit-record-button {
+            font-size: 0.6rem;
+            padding: 0.2rem 0.4rem;
+            background: #edf2f7;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .edit-record-button:hover {
+            background: #e2e8f0;
+        }
+
+        .field-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .field-type-indicator {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: #718096;
+            background: none;
+        }
+
+        .field-name {
+            flex-grow: 1;
+            padding: 0.4rem;
+            min-width: 40px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .field-name:focus {
+            outline: none;
+            background: #edf2f7;
+            box-shadow: 0 0 0 2px #63b3ed;
+        }
+
+        .field-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .field-actions button {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+        }
+
+        .resize-handle {
+            position: absolute;
+            right: -3px;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            cursor: col-resize;
+            background: transparent;
+            z-index: 2;
+        }
+
+        .resize-handle:hover {
+            background: #63b3ed;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            padding: 0.4rem;
+            margin-right: 0.4rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .drag-handle:hover {
+            background: #edf2f7;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .calendar-view, .board-view {
+            display: none;
+            margin-top: 1rem;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 0.75rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+            font-weight: 600;
+            background: #f7fafc;
+            padding: 0.75rem;
+            border-radius: 6px 6px 0 0;
+            color: #4a5568;
+            gap: 0.4rem;
+        }
+
+        .calendar-navigation {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .calendar-navigation span#calendarTitle {
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 100px;
+        }
+
+        .calendar-navigation select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #4a5568;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .calendar-navigation select:hover {
+            border-color: #63b3ed;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-navigation select:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.3);
+        }
+
+        .calendar-grid {
+            display: grid;
+            gap: 2px;
+            background: #e2e8f0;
+            border-radius: 0 0 6px 6px;
+            padding: 0.4rem;
+        }
+
+        .calendar-day {
+            background: #ffffff;
+            min-height: 100px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: #f0f0f0;
+        }
+
+        .calendar-day-header {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .calendar-event {
+            margin: 0.4rem 0;
+            padding: 0.4rem 0.6rem;
+            background: #edf2f7;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+
+        .calendar-event:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .board-grid {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .board-column {
+            flex: 1;
+            min-width: 250px;
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .board-column h3 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .board-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .board-card:hover {
+            background: #edf2f7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal {
+            display: block;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: #ffffff;
+            margin: 5% auto;
+            padding: 1.25rem;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            width: 85%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-content:hover {
+            transform: translateY(-5px);
+        }
+
+        .close-btn {
+            color: #718096;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover, .close-btn:focus {
+            color: #2d3748;
+        }
+
+        .modal h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .modal h4 {
+            font-size: 1.1rem;
+            margin: 0.75rem 0 0.5rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .event-field {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center; /* Mantiene el centrado vertical para otros campos */
+            gap: 0.75rem; /* Espacio entre el label y el input */
+            width: 100%;
+        }
+        
+        .event-field label {
+            font-weight: 600;
+            min-width: 150px; /* Ancho mínimo para el label */
+            color: #4a5568;
+            font-size: 0.9rem;
+            flex-shrink: 0; /* Evita que el label se encoja */
+            white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+            overflow: hidden; /* Oculta texto que exceda el ancho */
+            text-overflow: ellipsis; /* Añade puntos suspensivos si es necesario */
+        }
+        
+        .event-field.textarea {
+            display: block;
+        }
+        
+        .event-field.textarea label {
+            display: block; /* Cambiado para textarea */
+            margin-bottom: 0.25rem; /* Espacio debajo del label en textareas */
+        }
+        
+        .event-field input, .event-field select, .event-field textarea {
+            padding: 0.4rem 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f7fafc;
+            color: #2d3748;
+            font-size: 0.85rem;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .event-field input:hover, .event-field select:hover, .event-field textarea:hover {
+            border-color: #63b3ed;
+        }
+        
+        .event-field input:focus, .event-field select:focus, .event-field textarea:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.3);
+        }
+        
+        .event-field.textarea textarea {
+            min-height: 60px;
+            resize: vertical;
+            width: 100%; /* Asegura que el textarea llene el espacio disponible */
+        }
+        .modal-button {
+            padding: 0.5rem 1.25rem;
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+            border: none;
+            border-radius: 6px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .modal-button:hover {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.75rem;
+            gap: 0.75rem;
+        }
+
+        .event-details h3 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .field-visibility {
+            padding: 0.4rem 0;
+            background: #f7fafc;
+            border-radius: 6px;
+            margin-bottom: 0.4rem;
+            transition: background 0.2s ease;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .field-visibility input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: #63b3ed;
+            margin-top: 0;
+        }
+
+        .field-visibility:hover {
+            background: #edf2f7;
+        }
+
+        .field-visibility-simple {
+            padding: 0.4rem 0.5rem;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 0.4rem;
+            transition: background 0.2s ease, border-color 0.2s ease;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+
+        .field-visibility-simple:hover {
+            background: #f7fafc;
+            border-color: #63b3ed;
+        }
+
+        .field-visibility-simple input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: #63b3ed;
+            margin-top: 0;
+        }
+
+        .field-visibility-simple span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #2d3748;
+            font-size: 0.85rem;
+            flex-grow: 1;
+        }
+
+        .type-text, .type-number, .type-single-select, .type-multi-select, 
+        .type-date, .type-checkbox, .type-relation, .type-textarea {
+            background: none;
+        }
+
+        .cell-view {
+            padding: 0.5rem;
+            min-height: 2rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .cell-view:hover {
+            background: #edf2f7;
+        }
+
+        .drag-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #63b3ed;
+            display: none;
+        }
+
+        th.dragging .drag-indicator {
+            display: block;
+        }
+
+        .cell-editor, .date-editor {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f7fafc;
+            transition: border-color 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .cell-editor:focus, .date-editor:focus {
+            border-color: #63b3ed;
+            outline: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #718096;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        .options-container {
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0.4rem;
+            background: #f7fafc;
+            border-radius: 6px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: #ffffff;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .option-item:hover {
+            background: #edf2f7;
+        }
+
+        .option-item input {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            padding: 0.4rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .option-item input:focus {
+            outline: none;
+            background: #f7fafc;
+            box-shadow: 0 0 0 2px #63b3ed;
+        }
+
+        .option-item button {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .field-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            z-index: 1000;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .field-menu div {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .field-menu div:hover {
+            background: #f0f0f0;
+        }
+
+        .database-selector {
+            margin-bottom: 1rem;
+        }
+
+        .database-selector select {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+
+        .database-selector button {
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        tr:last-child {
+            background-color: #f9fafb;
+            border-top: 1px dashed #d1d5db;
+        }
+
+        .action-button {
+            background: none;
+            border: none;
+            font-size: 0.5rem;
+            cursor: pointer;
+            color: #4a5568;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: #edf2f7;
+        }
+
+        .multi-select-editor {
+            border: 1px solid #ccc;
+            padding: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+
+        .multi-select-option {
+            display: block;
+            padding: 2px 5px;
+            cursor: pointer;
+        }
+
+        .multi-select-option input[type="checkbox"] {
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .multi-select-option:hover {
+            background: #f0f0f0;
+        }
+
+        .small-plus-btn {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            margin-left: auto;
+            cursor: pointer;
+            border: 1px solid #007bff;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .small-plus-btn:hover {
+            background: #0056b3;
+        }
+
+        #tableView {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    
+        .add-field-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Estilo para la fila de añadir registro */
+        tr.add-row {
+            background-color: transparent; /* Fondo transparente para la fila completa */
+            border-top: 2px dashed #9ca3af; /* Borde superior punteado para separación */
+        }
+        
+        /* Asegurar que las celdas vacías (excepto la primera) tengan el color de fondo de los encabezados */
+        tr.add-row td:not(:first-child) {
+            background-color: #f7fafc; /* Mismo color de fondo que los encabezados */
+            opacity: 0.7; /* Reducir opacidad para un efecto de "deshabilitado" */
+            cursor: not-allowed; /* Cursor que indica que no es editable */
+            pointer-events: none; /* Deshabilitar interacciones en las celdas vacías */
+        }
+        
+        /* Estilo para la primera celda (con el botón "+") */
+        tr.add-row td:first-child {
+            background-color: transparent; /* Mantener el fondo transparente para que el botón destaque */
+            opacity: 1; /* Sin opacidad reducida para que el botón sea claramente visible */
+            cursor: pointer; /* Cursor para indicar interactividad */
+            pointer-events: auto; /* Habilitar interacción solo en la celda del botón */
+        }    
+        
+        .table-name[contenteditable="true"],
+        .view-name[contenteditable="true"] {
+            outline: none;           /* Quita el borde predeterminado */
+            background: #edf2f7;     /* Fondo gris claro */
+            box-shadow: 0 0 0 2px #63b3ed;  /* Borde azul para resaltar */
+        }      
+        
+        .duplicate-field {
+            display: flex;
+            align-items: flex-start; /* Cambiado a alineación al inicio (arriba) en lugar de centrado */
+            gap: 0.75rem; /* Espacio entre el label y el checkbox */
+            margin-bottom: 0.5rem;
+        }
+        
+        .duplicate-field label {
+            font-weight: 600;
+            min-width: 150px; /* Mismo ancho que otros labels para consistencia */
+            color: #4a5568;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .duplicate-field input[type="checkbox"] {
+            margin-left: 0; /* Sin margen adicional, ya que el gap lo maneja */
+            accent-color: #63b3ed; /* Mantiene el estilo del checkbox consistente */
+            align-self: flex-start; /* Alinea el checkbox al inicio (arriba) dentro de la columna derecha */
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="databases-list">
+        <div class="database-selector">
+            <select id="databaseSelect" onchange="filterDatabases(this.value)">
+                <option value="all">Todas las bases de datos</option>
+                ${databases.map(db => `<option value="${db.id}">${db.name}</option>`).join('')}
+            </select>
+            
+        </div>
+        <div class="database-list-content">
+            <div id="databasesList"></div>
+        </div>
+        <div class="logo">
+            <img src="logo.png" alt="InfoSync Logo">
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <span class="database-title" id="databaseTitle" tabindex="0"></span>
+            <p class="database-info" id="databaseInfo" style="color: #718096; font-size: 0.9rem; margin-bottom: 1rem;"></p>
+
+            <div class="toolbar" id="toolbar">
+                <button id="fieldVisibilityBtn" onclick="showFieldVisibilityModal()" class="toolbar-table-only">👁️ Campos Visibles</button>
+                <div class="field-selector" id="fieldSelectorCalendar" style="display: none;">
+                    <div class="calendar-navigation">
+                        <button onclick="shiftCalendar(-1)">◄</button>
+                        <span id="calendarTitle"></span>
+                        <button onclick="shiftCalendar(1)">►</button>
+                        <select id="calendarModeControl" onchange="updateCalendarControls()">
+                            <option value="daily">Diaria</option>
+                            <option value="weekly">Semanal</option>
+                            <option value="monthly" selected>Mensual</option>
+                        </select>
+                        <div id="calendarModeControls" style="display: inline-flex; gap: 0.5rem;"></div>
+                    </div>
+                </div>
+                <div class="field-selector" id="fieldSelectorBoard" style="display: none;"></div>
+            </div>
+
+            <div class="field-type-selector" id="fieldTypeSelector">
+                <div class="field-type-option" data-type="text">📝 Texto Simple</div>
+                <div class="field-type-option" data-type="textarea">📝 Texto Multilínea</div>
+                <div class="field-type-option" data-type="number">🔢 Número</div>
+                <div class="field-type-option" data-type="single-select">📋 Selección Simple</div>
+                <div class="field-type-option" data-type="multi-select">📋 Selección Múltiple</div>
+                <div class="field-type-option" data-type="date">📅 Fecha</div>
+                <div class="field-type-option" data-type="checkbox">☑️ Casilla</div>
+                <div class="field-type-option" data-type="relation">🔗 Relación</div>
+            </div>
+
+            <div id="tableView">
+                <table class="database-table" id="databaseTable">
+            <thead><tr id="headerRow"></tr></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <div id="calendarView" class="calendar-view"></div>
+            <div id="boardView" class="board-view"></div>
+
+            <div id="emptyState" class="empty-state">
+                <h3>Selecciona algo para comenzar</h3>
+                <p>Haz clic en una base de datos, tabla o vista en la sidebar.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        
+        let databases = [];
+        let currentDatabaseId = null;
+        let currentTableId = null;
+        let currentViewId = null;
+        let currentViewType = null;
+        let draggedColumn = null;
+        let calendarDate = new Date();
+        let isResizing = false;
+        let selectedDatabase = 'all'; // Para el filtro de bases de datos en el sidebar
+        
+        let saveTimeout = null;
+        
+        function debounceSave() {
+            if (saveTimeout) {
+                clearTimeout(saveTimeout);
+            }
+            saveTimeout = setTimeout(() => {
+                saveToDatabase();
+            }, 500); // Espera 500ms antes de guardar
+        }        
+    
+        // Cargar datos iniciales desde la base de datos
+        function loadFromDatabase(callback) {
+            fetch('/api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=load'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Datos recibidos del servidor:', data.data); // Depuración
+                    const newDatabases = data.data.map(db => ({
+                        ...db.data,
+                        id: db.id,
+                        name: db.name,
+                        tables: (db.data.tables || []).map(table => {
+                            // Preservar visibleFields local si ya existe
+                            const existingTable = databases.find(d => d.id === db.id)?.tables.find(t => t.id === table.id);
+                            return {
+                                ...table,
+                                visibleFields: existingTable ? new Set(existingTable.visibleFields) : new Set(table.visibleFields || [])
+                            };
+                        }),
+                        views: (db.data.views || []).map(view => ({
+                            ...view,
+                            config: {
+                                ...view.config,
+                                visibleFields: new Set(view.config.visibleFields || [])
+                            }
+                        })),
+                        visibleFields: new Set(db.data.visibleFields || [])
+                    }));
+                    databases = newDatabases; // Actualizar el estado global
+                    callback();
+                } else {
+                    console.error('Error al cargar:', data.error);
+                    alert('Error al cargar los datos desde el servidor.');
+                    callback();
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                alert('No hay conexión a internet. La aplicación requiere conexión para funcionar.');
+                callback();
+            });
+        }
+        
+        // Guardar datos en la base de datos
+        function saveToDatabase() {
+            const dataToSave = databases.map(db => {
+                const tables = (db.tables || []).map(table => ({
+                    ...table,
+                    visibleFields: Array.from(table.visibleFields || []) // Convertir Set a Array para JSON
+                }));
+                const views = (db.views || []).map(view => ({
+                    ...view,
+                    config: {
+                        ...view.config,
+                        visibleFields: Array.from(view.config.visibleFields || [])
+                    }
+                }));
+                return {
+                    ...db,
+                    tables,
+                    views,
+                    visibleFields: Array.from(db.visibleFields || [])
+                };
+            });
+            const jsonData = JSON.stringify(dataToSave);
+            console.log('Datos enviados a api.php:', jsonData);
+            fetch('/api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=save&data=' + encodeURIComponent(jsonData)
+            })
+            .then(response => {
+                console.log('Respuesta del servidor:', response.status, response.statusText);
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    console.log('Guardado exitoso, actualizando vista');
+                    renderCurrentView(); // Solo renderizamos la vista actual
+                } else {
+                    console.error('Error al guardar:', data.error);
+                    alert('Error al guardar los datos en el servidor: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                alert('No hay conexión a internet o error del servidor: ' + error.message);
+            });
+        }
+    
+        function createNewDatabase() {
+            const newDb = {
+                id: 'db_' + Date.now(),
+                name: 'Base de Datos sin título',
+                tables: [],
+                views: [],
+                tablesExpanded: true, // Expandido por defecto para nueva base
+                viewsExpanded: true   // Expandido por defecto para nueva base
+            };
+            databases.push(newDb);
+            currentDatabaseId = newDb.id;
+            currentTableId = null;
+            currentViewId = null;
+            currentViewType = null;
+            selectedDatabase = newDb.id;
+            updateDatabaseSelect();
+            updateDatabasesList();
+            renderCurrentView();
+            saveToDatabase();
+        
+            // Mostrar notificación de creación
+            showCreationNotification();
+        }
+    
+        function showCreationNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #48bb78;
+                color: white;
+                padding: 1rem;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 2000;
+                font-size: 0.9rem;
+            `;
+            notification.textContent = '¡Nueva base de datos creada con éxito!';
+            document.body.appendChild(notification);
+        
+            // Desaparecer después de 3 segundos
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.5s ease';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }    
+    
+        function toggleDatabaseExpansion(dbId) {
+            databases.forEach(db => {
+                if (db.id === dbId) {
+                    db.expanded = !db.expanded;
+                    if (db.expanded) {
+                        currentDatabaseId = dbId;
+                        currentTableId = null;
+                        currentViewId = null;
+                        currentViewType = null;
+                    }
+                } else {
+                    db.expanded = false;
+                }
+            });
+            updateDatabasesList();
+            renderCurrentView();
+        }
+    
+        function updateDatabaseName(dbId, newName) {
+            const db = databases.find(db => db.id === dbId);
+            if (db) {
+                db.name = newName.trim() || 'Base de Datos sin título';
+                updateDatabaseSelect();
+                updateDatabasesList();
+                renderCurrentView();
+                debounceSave(); // Usar debounce en lugar de saveToDatabase directamente
+            }
+        }
+        
+        function updateTableName(dbId, tableId, newName) {
+            const db = databases.find(db => db.id === dbId);
+            if (db) {
+                const table = db.tables.find(t => t.id === tableId);
+                if (table) {
+                    table.name = newName.trim() || 'Tabla sin título';
+                    updateDatabasesList();
+                    renderCurrentView();
+                    debounceSave();
+                } else {
+                    console.error('Tabla no encontrada:', tableId);
+                }
+            } else {
+                console.error('Base de datos no encontrada:', dbId);
+            }
+        }
+        
+        function updateViewName(dbId, viewId, newName) {
+            const db = databases.find(db => db.id === dbId);
+            if (db) {
+                const view = db.views.find(v => v.id === viewId);
+                if (view) {
+                    view.name = newName.trim() || 'Vista sin título';
+                    updateDatabasesList();
+                    renderCurrentView();
+                    debounceSave();
+                } else {
+                    console.error('Vista no encontrada:', viewId);
+                }
+            } else {
+                console.error('Base de datos no encontrada:', dbId);
+            }
+        }
+    
+        function deleteDatabase(dbId) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta base de datos? Se perderán todas las tablas y vistas.')) {
+                const index = databases.findIndex(db => db.id === dbId);
+                if (index > -1) {
+                    databases.splice(index, 1);
+                    if (currentDatabaseId === dbId) {
+                        currentDatabaseId = null;
+                        currentTableId = null;
+                        currentViewId = null;
+                        currentViewType = null;
+                    }
+                    updateDatabaseSelect();
+                    updateDatabasesList();
+                    renderCurrentView();
+                    saveToDatabase();
+                }
+            }
+        }
+    
+        // Ajustar filterDatabases
+        function filterDatabases(selectedDbId) {
+            selectedDatabase = selectedDbId;
+            if (selectedDbId === 'all' || selectedDbId === '') {
+                currentDatabaseId = null;
+                currentTableId = null;
+                currentViewId = null;
+                currentViewType = null;
+            } else if (selectedDbId === 'new') {
+                createNewDatabase(); // Esto manejará la creación y selección
+            } else {
+                currentDatabaseId = selectedDbId;
+                currentTableId = null;
+                currentViewId = null;
+                currentViewType = null;
+                const db = databases.find(db => db.id === selectedDbId);
+                if (db) {
+                    db.tablesExpanded = false; // Contraer tablas
+                    db.viewsExpanded = false; // Contraer vistas
+                }
+            }
+            updateDatabasesList();
+            renderCurrentView();
+        }
+    
+        function updateDatabaseSelect() {
+            const select = document.getElementById('databaseSelect');
+            let optionsHtml = '';
+        
+            if (databases.length === 0) {
+                optionsHtml = `<option value="" selected>Selecciona una base de datos</option>`;
+            } else {
+                optionsHtml = `
+                    <option value="" ${selectedDatabase === '' ? 'selected' : ''}>Selecciona una base de datos</option>
+                    ${databases.map(db => `
+                        <option value="${db.id}" ${db.id === selectedDatabase ? 'selected' : ''}>${db.name}</option>
+                    `).join('')}
+                `;
+            }
+        
+            optionsHtml += `<option value="new">Nueva base de datos</option>`;
+            select.innerHTML = optionsHtml;
+        }
+    
+        function updateDatabasesList() {
+            const listEl = document.getElementById('databasesList');
+            if (databases.length === 0) {
+                listEl.innerHTML = `<p class="empty-state">No hay bases de datos.</p>`;
+            } else if (!currentDatabaseId) {
+                listEl.innerHTML = '';
+            } else {
+                const db = databases.find(db => db.id === currentDatabaseId);
+                if (db) {
+                    listEl.innerHTML = `
+                        <div class="database-item active">
+                            <span class="database-name">${db.name}</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteDatabase('${db.id}')">🗑️</button>
+                        </div>
+                        <div class="section-header" onclick="toggleTablesExpansion('${db.id}')">
+                            <div style="display: flex; align-items: center;">
+                                <span class="expand-icon">${db.tablesExpanded ? '▼' : '▶'}</span>
+                                <span>Tablas (${db.tables.length})</span>
+                            </div>
+                            <button onclick="event.stopPropagation(); createNewTable('${db.id}')" class="action-button">➕</button>
+                        </div>
+                        <div class="tables-list ${db.tablesExpanded ? 'expanded' : ''}">
+                            ${db.tables.map(table => `
+                                <div class="table-item ${table.id === currentTableId && currentViewType === 'table' ? 'active' : ''}" onclick="switchToTable('${db.id}', '${table.id}', event)" data-table-id="${table.id}">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>📑</span>
+                                        <span class="table-name">${table.name}</span>
+                                    </div>
+                                    <button class="delete-btn" onclick="event.stopPropagation(); deleteTable('${db.id}', '${table.id}')">🗑️</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="section-header" onclick="toggleViewsExpansion('${db.id}')">
+                            <div style="display: flex; align-items: center;">
+                                <span class="expand-icon">${db.viewsExpanded ? '▼' : '▶'}</span>
+                                <span>Vistas (${db.views.length})</span>
+                            </div>
+                            <button onclick="event.stopPropagation(); showCreateViewModal('${db.id}')" class="action-button">➕</button>
+                        </div>
+                        <div class="views-list ${db.viewsExpanded ? 'expanded' : ''}">
+                            ${db.views.map(view => `
+                                <div class="view-item ${view.id === currentViewId ? 'active' : ''}" onclick="switchToView('${db.id}', '${view.id}', event)" data-view-id="${view.id}">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>${view.type === 'calendar' ? '📅' : view.type === 'board' ? '📊' : '📋'}</span>
+                                        <span class="view-name">${view.name}</span>
+                                    </div>
+                                    <button class="delete-btn" onclick="event.stopPropagation(); deleteView('${db.id}', '${view.id}')">🗑️</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+        
+                    document.querySelectorAll('.database-name').forEach(name => {
+                        name.addEventListener('dblclick', (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            makeEditable(name, 'name', 'database', db.id);
+                        });
+                    });
+        
+                    document.querySelectorAll('.table-name').forEach(name => {
+                        const tableItem = name.closest('.table-item');
+                        const tableId = tableItem.getAttribute('data-table-id');
+                        name.addEventListener('dblclick', (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            makeEditable(name, 'name', 'table', tableId, db.id);
+                        });
+                    });
+        
+                    document.querySelectorAll('.view-name').forEach(name => {
+                        const viewItem = name.closest('.view-item');
+                        const viewId = viewItem.getAttribute('data-view-id');
+                        name.addEventListener('dblclick', (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            makeEditable(name, 'name', 'view', viewId, db.id);
+                        });
+                    });
+                }
+            }
+        }
+        
+        // Función para manejar la expansión de todas las tablas
+        function toggleTablesExpansion(dbId) {
+            const db = databases.find(db => db.id === dbId);
+            if (db) {
+                db.tablesExpanded = !db.tablesExpanded;
+                updateDatabasesList();
+                saveToDatabase();
+            }
+        }
+        
+        // Función para manejar la expansión de todas las vistas
+        function toggleViewsExpansion(dbId) {
+            const db = databases.find(db => db.id === dbId);
+            if (db) {
+                db.viewsExpanded = !db.viewsExpanded;
+                updateDatabasesList();
+                saveToDatabase();
+            }
+        }        
+        
+        function createNewTable(databaseId) {
+            const db = databases.find(db => db.id === databaseId);
+            if (!db) return;
+        
+            const newTable = {
+                id: 'table_' + Date.now(),
+                name: 'Tabla sin título',
+                fields: [
+                    {
+                        id: 'field_id',
+                        name: 'ID',
+                        type: 'text',
+                        width: 'auto',
+                        hidden: false,
+                        isID: true
+                    }
+                ],
+                rows: [
+                    // Agregar un registro en blanco inicial
+                    {
+                        'field_id': '1' // Valor inicial para el campo "ID"
+                    }
+                ],
+                visibleFields: new Set(['field_id']) // Siempre definido
+            };
+        
+            db.tables.push(newTable);
+            currentDatabaseId = databaseId;
+            currentTableId = newTable.id;
+            currentViewId = null;
+            currentViewType = 'table';
+            updateDatabasesList();
+            renderCurrentView();
+            saveToDatabase();
+        }
+    
+        function updateFieldOptions(databaseId) {
+            const db = databases.find(d => d.id === databaseId);
+            const tableId = document.getElementById('viewTableSelect').value;
+            const table = db.tables.find(t => t.id === tableId);
+    
+            const dateFields = table.fields.filter(f => f.type === 'date');
+            const singleSelectFields = table.fields.filter(f => f.type === 'single-select');
+            const defaultCalendarField = dateFields.length === 1 ? dateFields[0].id : '';
+            const defaultBoardField = singleSelectFields.length === 1 ? singleSelectFields[0].id : '';
+    
+            // Actualizar campos de fecha para calendario
+            const calendarFieldSelect = document.getElementById('calendarFieldSelect');
+            calendarFieldSelect.innerHTML = `
+                <option value="">Selecciona un campo de fecha</option>
+                ${dateFields.map(field => `<option value="${field.id}" ${field.id === defaultCalendarField ? 'selected' : ''}>${field.name}</option>`).join('')}
+            `;
+    
+            // Actualizar campos de selección simple para tablero
+            const boardFieldSelect = document.getElementById('boardFieldSelect');
+            boardFieldSelect.innerHTML = `
+                <option value="">Selecciona un campo de selección simple</option>
+                ${singleSelectFields.map(field => `<option value="${field.id}" ${field.id === defaultBoardField ? 'selected' : ''}>${field.name}</option>`).join('')}
+            `;
+    
+            // Actualizar campos visibles usando la clase field-visibility
+            const visibleFieldsContainer = document.getElementById('visibleFieldsCheckboxes'); // Usamos el ID específico
+            if (visibleFieldsContainer) {
+                visibleFieldsContainer.innerHTML = `
+                    ${table.fields.map(field => `
+                        <label class="field-visibility">
+                            <input type="checkbox" value="${field.id}" checked>
+                            ${getFieldTypeEmoji(field.type)} ${field.name}
+                        </label>
+                    `).join('')}
+                `;
+            }
+        }
+    
+        function showCreateViewModal(databaseId) {
+            const db = databases.find(d => d.id === databaseId);
+            if (!db || db.tables.length === 0) {
+                alert('Primero crea una tabla en esta base de datos.');
+                return;
+            }
+        
+            const modalHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeCreateViewModal()">×</span>
+                        <h3>Crear Nueva Vista</h3>
+                        <div class="event-field">
+                            <label>Tipo:</label>
+                            <select id="viewType" onchange="toggleViewConfig()">
+                                <option value="table">📋 Tabla</option>
+                                <option value="calendar">📅 Calendario</option>
+                                <option value="board">📊 Tablero</option>
+                            </select>
+                        </div>
+                        <div class="event-field">
+                            <label>Tabla:</label>
+                            <select id="viewTableSelect" onchange="updateFieldOptions('${databaseId}')">
+                                ${db.tables.map(table => `<option value="${table.id}">${table.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="event-field">
+                            <label>Nombre:</label>
+                            <input type="text" id="viewName" value="Vista sin título" class="cell-editor">
+                        </div>
+                        <div id="calendarConfig" style="display: none;">
+                            <div class="event-field">
+                                <label>Campo de Fecha:</label>
+                                <select id="calendarFieldSelect">
+                                    <option value="">Selecciona un campo de fecha</option>
+                                    <!-- Llenado dinámico por updateFieldOptions -->
+                                </select>
+                            </div>
+                            <div class="event-field">
+                                <label>Modo:</label>
+                                <select id="calendarMode" onchange="updateCalendarModeOptions()">
+                                    <option value="daily">Diaria</option>
+                                    <option value="weekly">Semanal</option>
+                                    <option value="monthly">Mensual</option>
+                                </select>
+                            </div>
+                            <div id="calendarModeOptions">
+                                <!-- Opciones dinámicas según el modo -->
+                            </div>
+                        </div>
+                        <div id="boardConfig" style="display: none;">
+                            <div class="event-field">
+                                <label>Campo de Selección Simple:</label>
+                                <select id="boardFieldSelect">
+                                    <option value="">Selecciona un campo de selección simple</option>
+                                    <!-- Llenado dinámico por updateFieldOptions -->
+                                </select>
+                            </div>
+                        </div>
+                        <h4>Campos Visibles:</h4>
+                        <div id="visibleFieldsCheckboxes">
+                            ${db.tables[0].fields.map(field => `
+                                <label class="field-visibility">
+                                    <input type="checkbox" value="${field.id}" checked>
+                                    ${getFieldTypeEmoji(field.type)} ${field.name}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div class="modal-button-container">
+                            <button class="modal-button" onclick="createView('${databaseId}')">Crear</button>
+                            <button class="modal-button" onclick="closeCreateViewModal()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            updateFieldOptions(databaseId); // Llenar opciones iniciales
+            toggleViewConfig(); // Mostrar configuración inicial
+            updateCalendarModeOptions(); // Llenar opciones de modo inicial
+        }
+    
+        function updateCalendarModeOptions() {
+            const mode = document.getElementById('calendarMode').value;
+            const optionsContainer = document.getElementById('calendarModeOptions');
+            const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    
+            let html = '';
+            if (mode === 'daily') {
+                html = `
+                    <div class="event-field">
+                        <label>Mes:</label>
+                        <select id="calendarMonth">
+                            ${months.map((mes, i) => `<option value="${i}">${mes}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="event-field">
+                        <label>Día:</label>
+                        <select id="calendarDay">
+                            <!-- Llenado dinámico según el mes -->
+                        </select>
+                    </div>
+                `;
+            } else if (mode === 'weekly') {
+                html = `
+                    <div class="event-field">
+                        <label>Mes:</label>
+                        <select id="calendarMonth">
+                            ${months.map((mes, i) => `<option value="${i}">${mes}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="event-field">
+                        <label>Semana:</label>
+                        <select id="calendarWeek">
+                            <!-- Llenado dinámico según el mes -->
+                        </select>
+                    </div>
+                `;
+            } else if (mode === 'monthly') {
+                html = `
+                    <div class="event-field">
+                        <label>Mes:</label>
+                        <select id="calendarMonth">
+                            ${months.map((mes, i) => `<option value="${i}">${mes}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+    
+            optionsContainer.innerHTML = html;
+    
+            const monthSelect = document.getElementById('calendarMonth');
+            if (monthSelect) {
+                monthSelect.addEventListener('change', updateDayOrWeekOptions);
+                updateDayOrWeekOptions(); // Llenar opciones iniciales
+            }
+        }
+    
+        function updateDayOrWeekOptions() {
+            const mode = document.getElementById('calendarMode').value;
+            const month = parseInt(document.getElementById('calendarMonth').value);
+            const year = new Date().getFullYear(); // Usamos el año actual por simplicidad
+    
+            if (mode === 'daily') {
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const daySelect = document.getElementById('calendarDay');
+                daySelect.innerHTML = Array.from({ length: daysInMonth }, (_, i) => 
+                    `<option value="${i + 1}">${i + 1}</option>`
+                ).join('');
+            } else if (mode === 'weekly') {
+                const weeks = getWeeksInMonth(month, year);
+                const weekSelect = document.getElementById('calendarWeek');
+                weekSelect.innerHTML = weeks.map((week, i) => 
+                    `<option value="${i}">Semana ${i + 1} (${week.start} - ${week.end})</option>`
+                ).join('');
+            }
+        }
+    
+        function getWeeksInMonth(month, year) {
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const weeks = [];
+            let currentDate = new Date(firstDay);
+            currentDate.setDate(currentDate.getDate() - currentDate.getDay()); // Ajustar al domingo anterior
+    
+            while (currentDate <= lastDay) {
+                const weekStart = new Date(currentDate);
+                const weekEnd = new Date(currentDate);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                if (weekStart.getMonth() <= month && weekEnd.getMonth() >= month) {
+                    weeks.push({
+                        start: weekStart.getDate() + (weekStart.getMonth() === month ? 0 : 1),
+                        end: weekEnd.getDate() > lastDay.getDate() ? lastDay.getDate() : weekEnd.getDate()
+                    });
+                }
+                currentDate.setDate(currentDate.getDate() + 7);
+            }
+            return weeks;
+        }
+    
+        function toggleViewConfig() {
+            const viewType = document.getElementById('viewType').value;
+            const calendarConfig = document.getElementById('calendarConfig');
+            const boardConfig = document.getElementById('boardConfig');
+        
+            if (viewType === 'calendar') {
+                calendarConfig.style.display = 'block';
+                boardConfig.style.display = 'none';
+                updateCalendarModeOptions(); // Actualizar opciones al mostrar
+            } else if (viewType === 'board') {
+                calendarConfig.style.display = 'none';
+                boardConfig.style.display = 'block';
+            } else if (viewType === 'table') {
+                calendarConfig.style.display = 'none';
+                boardConfig.style.display = 'none';
+                // No necesitamos configuraciones adicionales para "table", solo campos visibles
+            } else {
+                // Por si se añade otro tipo de vista en el futuro
+                calendarConfig.style.display = 'none';
+                boardConfig.style.display = 'none';
+            }
+        }
+    
+        function createView(databaseId) {
+            const db = databases.find(d => d.id === databaseId);
+            const tableId = document.getElementById('viewTableSelect').value;
+            const table = db.tables.find(t => t.id === tableId);
+            const viewName = document.getElementById('viewName').value.trim() || 'Vista sin título';
+            const viewType = document.getElementById('viewType').value;
+        
+            const newView = {
+                id: 'view_' + Date.now(),
+                name: viewName,
+                type: viewType,
+                tableId: tableId,
+                config: {
+                    visibleFields: new Set()
+                }
+            };
+        
+            if (viewType === 'calendar') {
+                const calendarFieldId = document.getElementById('calendarFieldSelect').value;
+                const calendarMode = document.getElementById('calendarMode').value;
+                const calendarMonth = parseInt(document.getElementById('calendarMonth').value);
+        
+                if (!calendarFieldId) {
+                    alert('Por favor, selecciona un campo de fecha.');
+                    return;
+                }
+        
+                newView.config.calendarFieldId = calendarFieldId;
+                newView.config.calendarMode = calendarMode;
+                newView.config.initialMonth = calendarMonth; // Guardar el mes seleccionado
+        
+                // Guardar configuraciones adicionales según el modo
+                if (calendarMode === 'daily') {
+                    const calendarDay = parseInt(document.getElementById('calendarDay').value);
+                    newView.config.initialDay = calendarDay;
+                } else if (calendarMode === 'weekly') {
+                    const calendarWeek = parseInt(document.getElementById('calendarWeek').value);
+                    newView.config.initialWeek = calendarWeek;
+                }
+            } else if (viewType === 'board') {
+                const boardFieldId = document.getElementById('boardFieldSelect').value;
+                if (!boardFieldId) {
+                    alert('Por favor, selecciona un campo de selección simple.');
+                    return;
+                }
+                newView.config.boardFieldId = boardFieldId;
+            } else if (viewType === 'table') {
+                // No necesitamos configuraciones adicionales para "Tabla", solo visibleFields
+                // Esto ya se maneja más abajo
+            }
+        
+            // Guardar campos visibles para todas las vistas
+            const checkboxes = document.querySelectorAll('#visibleFieldsCheckboxes input[type="checkbox"]:checked');
+            newView.config.visibleFields = new Set(Array.from(checkboxes).map(cb => cb.value));
+        
+            db.views.push(newView);
+            currentViewId = newView.id;
+            currentTableId = null; // Establecer como null porque estamos en una vista, no en una tabla directa
+            currentViewType = viewType;
+        
+            // Actualizar calendarDate con el mes seleccionado antes de renderizar (solo para "calendar")
+            if (viewType === 'calendar') {
+                calendarDate = new Date(new Date().getFullYear(), calendarMonth, 1); // Establecer el mes seleccionado
+            }
+        
+            closeCreateViewModal();
+            updateDatabasesList();
+            renderCurrentView();
+            saveToDatabase();
+        }
+    
+        function closeCreateViewModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+    
+        function deleteTable(dbId, tableId) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta tabla? Se perderán todos los datos asociados.')) {
+                const db = databases.find(db => db.id === dbId);
+                if (!db) return;
+                const index = db.tables.findIndex(table => table.id === tableId);
+                if (index > -1) {
+                    db.tables.splice(index, 1);
+                    if (currentTableId === tableId) {
+                        currentTableId = null;
+                        currentViewId = null;
+                        currentViewType = null;
+                    }
+                    db.views = db.views.filter(view => view.tableId !== tableId);
+                    updateDatabasesList();
+                    renderCurrentView();
+                    saveToDatabase();
+                }
+            }
+        }
+    
+        function deleteView(dbId, viewId) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta vista?')) {
+                const db = databases.find(db => db.id === dbId);
+                if (!db) return;
+                const index = db.views.findIndex(view => view.id === viewId);
+                if (index > -1) {
+                    db.views.splice(index, 1);
+                    if (currentViewId === viewId) {
+                        currentViewId = null;
+                        currentViewType = null;
+                    }
+                    updateDatabasesList();
+                    renderCurrentView();
+                    saveToDatabase();
+                }
+            }
+        }
+            
+        function switchToTable(dbId, tableId, event) {
+            currentDatabaseId = dbId;
+            currentTableId = tableId;
+            currentViewId = null;
+            currentViewType = 'table';
+            updateDatabasesList();
+            renderCurrentView();
+        }
+        
+        function switchToView(dbId, viewId, event) {
+            event.stopPropagation();
+            currentDatabaseId = dbId;
+            currentTableId = null; // Aseguramos que no haya conflicto con tablas
+            currentViewId = viewId;
+            const db = databases.find(db => db.id === dbId);
+            const view = db.views.find(v => v.id === viewId);
+            currentViewType = view.type;
+            updateDatabasesList();
+            renderCurrentView();
+        }
+    
+        function getCurrentDatabase() {
+            return databases.find(db => db.id === currentDatabaseId);
+        }
+    
+        function getCurrentTable() {
+            const db = getCurrentDatabase();
+            if (!db) return null;
+            if (currentViewId) {
+                const view = db.views.find(v => v.id === currentViewId);
+                return view ? db.tables.find(t => t.id === view.tableId) : null;
+            }
+            return db.tables.find(t => t.id === currentTableId);
+        }
+    
+        function getFieldTypeEmoji(type) {
+            const types = { text: '📝', textarea: '📝', number: '🔢', 'single-select': '📋', 'multi-select': '📋', date: '📅', checkbox: '☑️', relation: '🔗' };
+            return types[type] || '📄';
+        }
+    
+        function showFieldTypeSelector() {
+            const selector = document.getElementById('fieldTypeSelector');
+            selector.style.display = 'block';
+            const rect = event.target.getBoundingClientRect();
+            selector.style.top = rect.bottom + 5 + 'px';
+            selector.style.left = rect.left + 'px';
+        
+            const newSelector = selector.cloneNode(true);
+            selector.parentNode.replaceChild(newSelector, selector);
+        
+            newSelector.querySelectorAll('.field-type-option').forEach(option => {
+                option.onclick = () => {
+                    if (option.dataset.type === 'single-select' || option.dataset.type === 'multi-select') {
+                        showOptionsModal(option.dataset.type, null, 'add');
+                    } else {
+                        addField(option.dataset.type);
+                        newSelector.style.display = 'none';
+                    }
+                };
+            });
+        
+            // Cerrar el selector al hacer clic fuera
+            document.addEventListener('click', function hideSelector(e) {
+                if (!newSelector.contains(e.target) && !e.target.matches('button')) {
+                    newSelector.style.display = 'none';
+                    document.removeEventListener('click', hideSelector); // Limpiar el listener
+                }
+            });
+        }
+        
+        function showOptionsModal(type, fieldId, action) {
+            const table = getCurrentTable();
+            if (!table) return;
+        
+            const field = fieldId ? table.fields.find(f => f.id === fieldId) : null;
+            const options = field ? field.options || [] : ['Opción 1', 'Opción 2'];
+        
+            const modalHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeOptionsModal()">×</span>
+                        <h3>${action === 'add' ? 'Añadir Campo con Opciones' : 'Editar Opciones'}</h3>
+                        <div class="event-field">
+                            <label>Nombre del Campo:</label>
+                            <input type="text" id="optionFieldName" value="${field ? field.name : 'Nuevo Campo'}" class="cell-editor">
+                        </div>
+                        <div class="options-container" id="optionsContainer">
+                            ${options.map((opt, index) => `
+                                <div class="option-item">
+                                    <input type="text" value="${opt}" class="cell-editor">
+                                    <button onclick="this.parentElement.remove()">🗑️</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="addOption()">➕ Añadir Opción</button>
+                        <div class="modal-button-container">
+                            <button class="modal-button" onclick="saveOptions('${type}', '${fieldId}', '${action}')">Guardar</button>
+                            <button class="modal-button" onclick="closeOptionsModal()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function closeOptionsModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+        
+        function addOption() {
+            const container = document.getElementById('optionsContainer');
+            const newOptionHTML = `
+                <div class="option-item">
+                    <input type="text" value="Nueva Opción" class="cell-editor">
+                    <button onclick="this.parentElement.remove()">🗑️</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', newOptionHTML);
+        }
+        
+        function saveOptions(type, fieldId, action) {
+            const table = getCurrentTable();
+            if (!table) return;
+        
+            const nameInput = document.getElementById('optionFieldName');
+            const optionsInputs = document.querySelectorAll('#optionsContainer input');
+            const options = Array.from(optionsInputs).map(input => input.value.trim()).filter(opt => opt !== '');
+        
+            if (action === 'add') {
+                const newFieldId = 'field_' + Date.now();
+                const newField = {
+                    id: newFieldId,
+                    name: nameInput.value.trim() || 'Nuevo Campo',
+                    type: type,
+                    width: 'auto',
+                    hidden: false,
+                    options: options
+                };
+                table.fields.push(newField);
+                table.visibleFields.add(newFieldId);
+        
+                table.rows.forEach(row => {
+                    row[newFieldId] = type === 'multi-select' ? [] : '';
+                });
+            } else if (action === 'edit' && fieldId) {
+                const field = table.fields.find(f => f.id === fieldId);
+                if (field) {
+                    field.name = nameInput.value.trim() || 'Nuevo Campo';
+                    field.options = options;
+        
+                    table.rows.forEach(row => {
+                        if (type === 'single-select' && !options.includes(row[fieldId])) {
+                            row[fieldId] = '';
+                        } else if (type === 'multi-select') {
+                            row[fieldId] = row[fieldId].filter(opt => options.includes(opt));
+                        }
+                    });
+                }
+            }
+        
+            closeOptionsModal();
+            renderCurrentView();
+            updateFieldSelectors();
+            saveToDatabase();
+        }
+        
+        function addField(type, options = [], fieldId = null) {
+            const table = getCurrentTable();
+            if (!table) return;
+        
+            // Definir opciones por defecto para single-select y multi-select
+            const defaultOptions = (type === 'single-select' || type === 'multi-select') && options.length === 0 
+                ? ['Sin iniciar', 'En proceso', 'Completado'] 
+                : options;
+        
+            const newField = {
+                id: fieldId || 'field_' + Date.now(),
+                name: 'Nuevo Campo',
+                type: type,
+                width: 'auto',
+                hidden: false,
+                ...(defaultOptions.length > 0 && { options: defaultOptions })
+            };
+        
+            table.fields.push(newField);
+            table.visibleFields.add(newField.id);
+            renderCurrentView();
+            saveToDatabase();
+        }
+    
+        function addRow() {
+            const table = getCurrentTable();
+            if (!table) return;
+    
+            const newRow = {};
+            table.fields.forEach(field => {
+                if (field.isID) {
+                    const maxId = table.rows.length > 0 ? Math.max(...table.rows.map(row => parseInt(row[field.id]) || 0)) : 0;
+                    newRow[field.id] = (maxId + 1).toString();
+                } else {
+                    newRow[field.id] = field.type === 'checkbox' ? false : 
+                                       field.type === 'multi-select' ? [] : 
+                                       field.type === 'single-select' ? '' : 
+                                       field.type === 'textarea' ? '' : '';
+                }
+            });
+            table.rows.push(newRow);
+            renderCurrentView();
+            saveToDatabase();
+        }
+    
+        function deleteField(fieldId) {
+            const table = getCurrentTable();
+            if (!table) return;
+    
+            const field = table.fields.find(f => f.id === fieldId);
+            if (field && field.isID) {
+                alert('El campo ID no puede ser eliminado.');
+                return;
+            }
+    
+            if (confirm('¿Estás seguro de que deseas eliminar este campo? Se perderán los datos asociados.')) {
+                const index = table.fields.findIndex(f => f.id === fieldId);
+                if (index > -1) {
+                    table.fields.splice(index, 1);
+                    table.rows.forEach(row => delete row[fieldId]);
+                    table.visibleFields.delete(fieldId);
+                    const db = getCurrentDatabase();
+                    db.views.forEach(view => {
+                        if (view.tableId === table.id) {
+                            view.config.visibleFields.delete(fieldId);
+                        }
+                    });
+    
+                    if (table.fields.length === 0) {
+                        table.rows = [];
+                        table.visibleFields.clear();
+                    }
+    
+                    renderCurrentView();
+                    updateFieldSelectors();
+                    updateToolbarVisibility(currentViewType === 'table');
+                    saveToDatabase();
+                }
+            }
+        }
+    
+        function editField(fieldId) {
+            const table = getCurrentTable();
+            const field = table.fields.find(f => f.id === fieldId);
+            if (!field) return;
+    
+            if (field.type === 'single-select' || field.type === 'multi-select') {
+                showOptionsModal(field.type, field, 'edit', fieldId);
+            } else {
+                const modalHTML = `
+                    <div class="modal">
+                        <div class="modal-content" onclick="event.stopPropagation()">
+                            <span class="close-btn" onclick="closeEditFieldModal()">×</span>
+                            <h3>Editar Campo</h3>
+                            <div class="event-field">
+                                <label>Nombre:</label>
+                                <input type="text" id="editFieldName" value="${field.name}" class="cell-editor">
+                            </div>
+                            <div class="modal-button-container">
+                                <button class="modal-button" onclick="saveEditField('${fieldId}')">Guardar</button>
+                                <button class="modal-button" onclick="closeEditFieldModal()">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+            }
+        }
+    
+        function saveEditField(fieldId) {
+            const table = getCurrentTable();
+            const field = table.fields.find(f => f.id === fieldId);
+            if (!field) return;
+    
+            const newName = document.getElementById('editFieldName').value.trim();
+            if (newName) {
+                field.name = newName;
+                renderCurrentView();
+                saveToDatabase();
+            }
+            closeEditFieldModal();
+        }
+    
+        function closeEditFieldModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+    
+        function showOptionsModal(type, fieldId, action = 'edit') {
+            const table = getCurrentTable();
+            const field = fieldId ? table.fields.find(f => f.id === fieldId) : null;
+            const options = field ? field.options : ['Sin iniciar', 'En proceso', 'Completado']; // Opciones por defecto
+        
+            const modalHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeOptionsModal()">×</span>
+                        <h3>${action === 'edit' ? 'Editar' : 'Crear'} Opciones</h3>
+                        <div class="options-container" id="optionsContainer">
+                            ${options.map((opt, index) => `
+                                <div class="option-item">
+                                    <input type="text" value="${opt}" data-index="${index}">
+                                    <button onclick="removeOption(${index})">🗑️</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="addOption()">➕ Añadir Opción</button>
+                        <div class="modal-button-container">
+                            <button class="modal-button" onclick="saveOptions('${type}', '${fieldId}', '${action}')">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function addOptionFromInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('newOptionInput');
+                const newOption = input.value.trim();
+                if (newOption) {
+                    addOption(newOption);
+                    input.value = '';
+                }
+            }
+        }
+    
+        function addOption(optionText) {
+            const optionsContainer = document.getElementById('optionsContainer');
+            const optionItem = document.createElement('div');
+            optionItem.className = 'option-item';
+            optionItem.innerHTML = `
+                <input type="text" value="${optionText}" class="option-input">
+                <button onclick="removeOption(this)">🗑️</button>
+            `;
+            optionsContainer.appendChild(optionItem);
+        }
+    
+        function removeOption(button) {
+            button.parentElement.remove();
+        }
+    
+        function saveOptions(type, fieldId, action) {
+            const optionsContainer = document.getElementById('optionsContainer');
+            const optionInputs = optionsContainer.querySelectorAll('input');
+            const options = Array.from(optionInputs).map(input => input.value.trim()).filter(opt => opt !== '');
+        
+            if (options.length === 0) {
+                // Asegurar opciones por defecto si no se ingresan
+                options.push('Sin iniciar', 'En proceso', 'Completado');
+            }
+        
+            if (action === 'edit') {
+                editField(fieldId, options);
+            } else {
+                addField(type, options);
+            }
+            closeOptionsModal();
+        }
+    
+        function closeOptionsModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+    
+        function renderTable(table) {
+            const headerRow = document.getElementById('headerRow');
+            const tableBody = document.getElementById('tableBody');
+            const visibleFields = table.visibleFields || new Set(table.fields.map(f => f.id));
+        
+            headerRow.innerHTML = `
+                <th style="width: 30px;"></th>
+                ${table.fields.filter(field => visibleFields.has(field.id)).map(field => `
+                    <th style="width: ${field.width === 'auto' ? 'auto' : field.width}px" draggable="true" data-field-id="${field.id}">
+                        <div class="field-header">
+                            <span class="drag-handle" onclick="showFieldMenu('${field.id}', event)">⋮⋮</span>
+                            <div class="field-name" contenteditable onblur="updateFieldName('${field.id}', this.textContent)">${field.name}</div>
+                            <span class="field-type-indicator type-${field.type}">${getFieldTypeEmoji(field.type)}</span>
+                            <div class="resize-handle" data-field-id="${field.id}"></div>
+                        </div>
+                        <div class="drag-indicator"></div>
+                    </th>
+                `).join('')}
+                <th style="width: 30px;">
+                    <button class="action-button add-field-btn" onclick="showFieldTypeSelector(event)" title="Agregar nuevo campo">➕</button>
+                </th>
+            `;
+        
+            tableBody.innerHTML = table.rows.map((row, rowIndex) => `
+                <tr>
+                    <td style="width: 30px;">
+                        <button class="action-button edit-record-button" onclick="showEditRecordModal(${rowIndex})">✏️</button>
+                    </td>
+                    ${table.fields.filter(field => visibleFields.has(field.id)).map(field => {
+                        let cellContent = '';
+                        const value = row[field.id];
+                        if (field.isID) {
+                            cellContent = `<div class="cell-view">${value || '-'}</div>`;
+                        } else {
+                            switch (field.type) {
+                                case 'checkbox':
+                                    cellContent = `<div class="cell-view" onclick="makeEditable(this, 'cell', ${rowIndex}, '${field.id}')">${value ? '✅' : '❌'}</div>`;
+                                    break;
+                                case 'date':
+                                case 'number':
+                                case 'text':
+                                case 'textarea':
+                                case 'single-select':
+                                case 'multi-select':
+                                    cellContent = `<div class="cell-view" onclick="makeEditable(this, 'cell', ${rowIndex}, '${field.id}')">${Array.isArray(value) ? value.join(', ') : (value || '-')}</div>`;
+                                    break;
+                                default:
+                                    cellContent = `<div class="cell-view" onclick="makeEditable(this, 'cell', ${rowIndex}, '${field.id}')">${value || '-'}</div>`;
+                                    break;
+                            }
+                        }
+                        return `<td>${cellContent}</td>`;
+                    }).join('')}
+                    <td style="width: 30px; text-align: center; vertical-align: middle;">
+                        <button class="action-button" onclick="deleteRow(${rowIndex})">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        
+            tableBody.innerHTML += `
+                <tr class="add-row">
+                    <td style="width: 30px;">
+                        <button class="action-button add-record-button" onclick="addRow()" title="Agregar nuevo registro">➕</button>
+                    </td>
+                    ${table.fields.filter(field => visibleFields.has(field.id)).map(() => `
+                        <td></td>
+                    `).join('')}
+                    <td></td>
+                </tr>
+            `;
+        
+            setupDragAndDrop();
+            setupResizeHandlers();
+        
+            document.querySelectorAll('.field-name').forEach(fieldNameElement => {
+                fieldNameElement.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        const fieldId = this.closest('th').dataset.fieldId;
+                        const newName = this.textContent.trim();
+                        updateFieldName(fieldId, newName);
+                        this.blur();
+                    }
+                });
+            });
+        }
+        
+        function renderTableView(table, config) {
+            const tableView = document.getElementById('tableView');
+            tableView.innerHTML = ''; // Limpiar contenido previo
+            const tableEl = document.createElement('table');
+            tableEl.className = 'database-table';
+            tableEl.id = 'databaseTable';
+        
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            headerRow.id = 'headerRow';
+            const tbody = document.createElement('tbody');
+            tbody.id = 'tableBody';
+        
+            const visibleFields = config.visibleFields || new Set(table.fields.map(f => f.id));
+        
+            // Encabezado sin la columna de agregar campos
+            headerRow.innerHTML = `
+                <th style="width: 30px;"></th> <!-- Columna de edición -->
+                ${table.fields.filter(field => visibleFields.has(field.id)).map(field => `
+                    <th style="width: ${field.width === 'auto' ? 'auto' : field.width}px" draggable="true" data-field-id="${field.id}">
+                        <div class="field-header">
+                            <span class="drag-handle" onclick="showFieldMenu('${field.id}', event)">⋮⋮</span>
+                            <div class="field-name" contenteditable onblur="updateFieldName('${field.id}', this.textContent)">${field.name}</div>
+                            <span class="field-type-indicator type-${field.type}">${getFieldTypeEmoji(field.type)}</span>
+                            <div class="resize-handle" data-field-id="${field.id}"></div>
+                        </div>
+                        <div class="drag-indicator"></div>
+                    </th>
+                `).join('')}
+                <th style="width: 30px;"></th> <!-- Columna de eliminación -->
+            `;
+        
+            // Filas sin la columna de agregar campos
+            tbody.innerHTML = table.rows.map((row, rowIndex) => `
+                <tr>
+                    <td style="width: 30px;">
+                        <button class="action-button edit-record-button" onclick="showEditRecordModal(${rowIndex})">✏️</button>
+                    </td>
+                    ${table.fields.filter(field => visibleFields.has(field.id)).map(field => {
+                        let cellContent = '';
+                        const value = row[field.id];
+                        if (field.isID) {
+                            cellContent = `<div class="cell-view">${value || '-'}</div>`;
+                        } else {
+                            switch (field.type) {
+                                case 'checkbox':
+                                    cellContent = `<div class="cell-view" onclick="makeEditable(this, 'cell', ${rowIndex}, '${field.id}')">${value ? '✅' : '❌'}</div>`;
+                                    break;
+                                case 'date':
+                                case 'number':
+                                case 'text':
+                                case 'textarea':
+                                case 'single-select':
+                                case 'multi-select':
+                                    cellContent = `<div class="cell-view" onclick="makeEditable(this, 'cell', ${rowIndex}, '${field.id}')">${Array.isArray(value) ? value.join(', ') : (value || '-')}</div>`;
+                                    break;
+                                default:
+                                    cellContent = `<div class="cell-view" onclick="makeEditable(this, 'cell', ${rowIndex}, '${field.id}')">${value || '-'}</div>`;
+                                    break;
+                            }
+                        }
+                        return `<td>${cellContent}</td>`;
+                    }).join('')}
+                    <td style="width: 30px; text-align: center; vertical-align: middle;">
+                        <button class="action-button" onclick="deleteRow(${rowIndex})">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        
+            // Fila para agregar registros, sin la columna de agregar campos
+            tbody.innerHTML += `
+                <tr class="add-row">
+                    <td style="width: 30px;">
+                        <button class="action-button add-record-button" onclick="addRow()" title="Agregar nuevo registro">➕</button>
+                    </td>
+                    ${table.fields.filter(field => visibleFields.has(field.id)).map(() => `
+                        <td></td>
+                    `).join('')}
+                    <td style="width: 30px;"></td> <!-- Celda vacía para la columna de eliminación -->
+                </tr>
+            `;
+        
+            thead.appendChild(headerRow);
+            tableEl.appendChild(thead);
+            tableEl.appendChild(tbody);
+            tableView.appendChild(tableEl);
+        
+            setupDragAndDrop();
+            setupResizeHandlers();
+        
+            document.querySelectorAll('.field-name').forEach(fieldNameElement => {
+                fieldNameElement.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        const fieldId = this.closest('th').dataset.fieldId;
+                        const newName = this.textContent.trim();
+                        updateFieldName(fieldId, newName);
+                        this.blur();
+                    }
+                });
+            });
+        }
+
+        function showFieldMenu(fieldId, event) {
+            event.stopPropagation();
+            const menuHTML = `
+                <div class="field-menu" style="position: absolute; top: ${event.clientY}px; left: ${event.clientX}px;">
+                    <div onclick="editField('${fieldId}'); this.parentElement.remove()">Editar Campo</div>
+                    <div onclick="deleteField('${fieldId}'); this.parentElement.remove()">Eliminar Campo</div>
+                </div>
+            `;
+    
+            const existingMenu = document.querySelector('.field-menu');
+            if (existingMenu) existingMenu.remove();
+    
+            document.body.insertAdjacentHTML('beforeend', menuHTML);
+            const menu = document.querySelector('.field-menu');
+    
+            document.addEventListener('click', function hideMenu(e) {
+                if (!menu.contains(e.target)) {
+                    menu.remove();
+                    document.removeEventListener('click', hideMenu);
+                }
+            });
+        }
+    
+        function makeEditable(element, context, ...args) {
+            console.log('Editando:', { context, args }); // Depuración
+        
+            if (context === 'cell') {
+                // Edición de celdas de tabla
+                const [rowIndex, fieldId] = args;
+                const table = getCurrentTable();
+                if (!table) {
+                    console.error('No hay tabla actual');
+                    return;
+                }
+                const field = table.fields.find(f => f.id === fieldId);
+                if (!field) {
+                    console.error('Campo no encontrado:', fieldId);
+                    return;
+                }
+                const currentValue = table.rows[rowIndex][fieldId] || [];
+        
+                let editorHTML = '';
+                switch (field.type) {
+                    case 'checkbox':
+                        const newValue = !currentValue;
+                        updateCell(rowIndex, fieldId, newValue);
+                        element.innerHTML = newValue ? '✅' : '❌';
+                        renderCurrentView();
+                        return;
+                    case 'date':
+                        editorHTML = `<input type="date" class="date-editor" value="${currentValue || ''}">`;
+                        break;
+                    case 'number':
+                        editorHTML = `<input type="number" class="cell-editor" value="${currentValue || ''}">`;
+                        break;
+                    case 'single-select':
+                        editorHTML = `
+                            <select class="cell-editor">
+                                ${field.options.map(opt => `
+                                    <option value="${opt}" ${currentValue === opt ? 'selected' : ''}>${opt}</option>
+                                `).join('')}
+                            </select>`;
+                        break;
+                    case 'multi-select':
+                        editorHTML = `
+                            <select class="cell-editor" multiple size="${Math.min(field.options.length, 5)}">
+                                ${field.options.map(opt => `
+                                    <option value="${opt}" ${Array.isArray(currentValue) && currentValue.includes(opt) ? 'selected' : ''}>${opt}</option>
+                                `).join('')}
+                            </select>`;
+                        break;
+                    case 'text':
+                        editorHTML = `<input type="text" class="cell-editor" value="${currentValue || ''}">`;
+                        break;
+                    case 'textarea':
+                        editorHTML = `<textarea class="cell-editor" rows="3">${currentValue || ''}</textarea>`;
+                        break;
+                    default:
+                        editorHTML = `<input type="text" class="cell-editor" value="${currentValue || ''}">`;
+                        break;
+                }
+        
+                element.innerHTML = editorHTML;
+                const input = element.querySelector('select, textarea, input');
+                if (input) {
+                    input.focus();
+                    if (input.type === 'date') {
+                        try {
+                            input.showPicker();
+                        } catch (e) {
+                            console.warn('showPicker no soportado en este navegador');
+                        }
+                    }
+        
+                    if (input.tagName === 'SELECT') {
+                        if (input.multiple) {
+                            input.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                input.focus();
+                            });
+        
+                            input.addEventListener('change', () => {
+                                const selectedValues = Array.from(input.selectedOptions).map(option => option.value);
+                                updateCell(rowIndex, fieldId, selectedValues);
+                                element.innerHTML = selectedValues.length ? selectedValues.join(', ') : '-';
+                            });
+        
+                            input.addEventListener('blur', () => {
+                                const selectedValues = Array.from(input.selectedOptions).map(option => option.value);
+                                updateCell(rowIndex, fieldId, selectedValues);
+                                element.innerHTML = Array.isArray(selectedValues) ? selectedValues.join(', ') : (selectedValues || '-');
+                                renderCurrentView();
+                            });
+        
+                            input.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    const selectedValues = Array.from(input.selectedOptions).map(option => option.value);
+                                    updateCell(rowIndex, fieldId, selectedValues);
+                                    element.innerHTML = selectedValues.length ? selectedValues.join(', ') : '-';
+                                    input.blur();
+                                }
+                            });
+                        } else {
+                            input.onblur = () => {
+                                let value = input.value;
+                                updateCell(rowIndex, fieldId, value);
+                                element.innerHTML = value || '-';
+                                renderCurrentView();
+                            };
+                            input.onchange = () => {
+                                let value = input.value;
+                                updateCell(rowIndex, fieldId, value);
+                                element.innerHTML = value || '-';
+                                renderCurrentView();
+                            };
+                        }
+                    } else if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
+                        input.onblur = () => {
+                            let value = input.type === 'textarea' ? input.value : input.value;
+                            updateCell(rowIndex, fieldId, value);
+                            element.innerHTML = value || '-';
+                            renderCurrentView();
+                        };
+                        input.onkeydown = (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                input.blur();
+                            }
+                        };
+                    }
+                } else {
+                    console.error('No se encontró el elemento de entrada después de insertar editorHTML:', editorHTML);
+                }
+            } else if (context === 'name') {
+                // Edición de nombres en el sidebar o título principal
+                const [type, id, dbId = null] = args;
+        
+                if (!id || !dbId) {
+                    console.error('ID o dbId no proporcionados:', { type, id, dbId });
+                    return;
+                }
+        
+                if (element.textContent.trim() === '') {
+                    console.error('El elemento no tiene contenido de texto.');
+                    return;
+                }
+        
+                // Limpiar cualquier listener previo para evitar reutilización
+                element.removeEventListener('blur', element.blurHandler);
+                element.removeEventListener('keydown', element.keydownHandler);
+                element.removeEventListener('click', element.clickHandler);
+                element.removeEventListener('keypress', element.keypressHandler);
+        
+                element.setAttribute('contenteditable', 'true');
+                element.setAttribute('tabindex', '0');
+                setTimeout(() => {
+                    element.focus();
+                    if (element.textContent) {
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        range.selectNodeContents(element);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }, 0);
+        
+                const originalText = element.textContent.trim();
+        
+                // Crear una nueva instancia de saveChanges para cada edición
+                const saveChanges = () => {
+                    const newText = element.textContent.trim() || (type === 'database' ? 'Base de Datos sin título' : type === 'table' ? 'Tabla sin título' : 'Vista sin título');
+        
+                    if (newText !== originalText) {
+                        const db = databases.find(db => db.id === dbId);
+                        if (!db) {
+                            console.error('Base de datos no encontrada:', dbId);
+                            return;
+                        }
+        
+                        switch (type) {
+                            case 'database':
+                                console.log('Actualizando base de datos:', { id, newText }); // Depuración
+                                updateDatabaseName(id, newText);
+                                break;
+                            case 'table':
+                                console.log('Actualizando tabla:', { id, newText, dbId }); // Depuración
+                                updateTableName(dbId, id, newText);
+                                // Actualizar título si es la tabla seleccionada
+                                if (currentTableId === id && currentViewType === 'table') {
+                                    document.getElementById('databaseTitle').textContent = newText;
+                                }
+                                break;
+                            case 'view':
+                                console.log('Actualizando vista:', { id, newText, dbId }); // Depuración
+                                updateViewName(dbId, id, newText);
+                                // Actualizar título si es la vista seleccionada
+                                if (currentViewId === id && (currentViewType === 'calendar' || currentViewType === 'board')) {
+                                    document.getElementById('databaseTitle').textContent = newText;
+                                }
+                                break;
+                            default:
+                                console.error('Tipo no válido en makeEditable:', type);
+                        }
+                    }
+        
+                    // Limpiar atributos y eventos
+                    element.removeAttribute('contenteditable');
+                    element.removeAttribute('tabindex');
+                    element.removeEventListener('blur', blurHandler);
+                    element.removeEventListener('keydown', keydownHandler);
+                    element.removeEventListener('click', clickHandler);
+                    element.removeEventListener('keypress', keypressHandler);
+        
+                    updateDatabasesList(); // Actualizar sidebar
+                    renderCurrentView();   // Actualizar vista principal
+                };
+        
+                // Definir handlers específicos para esta edición
+                const blurHandler = () => {
+                    saveChanges();
+                };
+        
+                const keydownHandler = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        saveChanges();
+                        element.blur();
+                    }
+                };
+        
+                const clickHandler = (e) => {
+                    e.stopPropagation();
+                };
+        
+                const keypressHandler = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                    }
+                };
+        
+                // Asignar handlers y almacenarlos para limpieza
+                element.addEventListener('blur', blurHandler);
+                element.addEventListener('keydown', keydownHandler);
+                element.addEventListener('click', clickHandler, { once: true });
+                element.addEventListener('keypress', keypressHandler);
+        
+                // Almacenar referencias para limpieza futura (opcional)
+                element.blurHandler = blurHandler;
+                element.keydownHandler = keydownHandler;
+                element.clickHandler = clickHandler;
+                element.keypressHandler = keypressHandler;
+            } else {
+                console.error('Contexto no válido en makeEditable:', context);
+            }
+        }
+    
+        function deleteRow(rowIndex) {
+            const table = getCurrentTable();
+            if (!table) return;
+            if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+                table.rows.splice(rowIndex, 1);
+                renderCurrentView();
+                saveToDatabase();
+            }
+        }
+    
+        function renderCurrentView() {
+            const tableView = document.getElementById('tableView');
+            const calendarView = document.getElementById('calendarView');
+            const boardView = document.getElementById('boardView');
+            const titleElement = document.getElementById('databaseTitle');
+            const databaseInfo = document.getElementById('databaseInfo');
+            const toolbar = document.getElementById('toolbar');
+        
+            tableView.style.display = 'none';
+            calendarView.style.display = 'none';
+            boardView.style.display = 'none';
+            toolbar.style.display = 'none'; // Por defecto, ocultar la toolbar
+        
+            // Limpiar botones dinámicos y ocultar "Campos Visibles" inicialmente
+            toolbar.querySelectorAll('button:not(.toolbar-table-only)').forEach(btn => btn.remove());
+            const fieldVisibilityBtn = document.getElementById('fieldVisibilityBtn');
+            if (fieldVisibilityBtn) fieldVisibilityBtn.style.display = 'none'; // Ocultar por defecto
+        
+            if (!currentDatabaseId) {
+                titleElement.style.display = 'none';
+                databaseInfo.style.display = 'none';
+                updateEmptyState();
+                return;
+            }
+        
+            const db = getCurrentDatabase();
+            const table = getCurrentTable();
+            if (!table && !currentViewId) {
+                titleElement.style.display = 'none';
+                databaseInfo.style.display = 'none';
+                updateEmptyState();
+                return;
+            }
+        
+            titleElement.style.display = 'block';
+        
+            if (currentViewType === 'table' && currentTableId) {
+                tableView.style.display = 'block';
+                renderTable(table);
+                titleElement.textContent = table.name;
+                databaseInfo.style.display = 'none';
+                toolbar.style.display = 'flex'; // Mostrar toolbar
+                if (fieldVisibilityBtn) fieldVisibilityBtn.style.display = 'flex'; // Mostrar "Campos Visibles"
+            } else if (currentViewType === 'table' && currentViewId) { // Nueva vista "Tabla"
+                const view = db.views.find(v => v.id === currentViewId);
+                tableView.style.display = 'block';
+                renderTableView(table, view.config);
+                titleElement.textContent = view.name;
+                databaseInfo.style.display = 'block';
+                databaseInfo.textContent = `${db.name} > ${view.name}`;
+                toolbar.style.display = 'flex';
+                const configBtn = document.createElement('button');
+                configBtn.textContent = '⚙️ Configurar Vista';
+                configBtn.onclick = showViewConfigModal;
+                toolbar.appendChild(configBtn);
+            } else if (currentViewType === 'calendar' && currentViewId) {
+                const view = db.views.find(v => v.id === currentViewId);
+                calendarView.style.display = 'block';
+                if (view.config.initialMonth !== undefined) {
+                    calendarDate = new Date(new Date().getFullYear(), view.config.initialMonth, 1);
+                }
+                renderCalendar(table, view.config);
+                titleElement.textContent = view.name;
+                databaseInfo.style.display = 'block';
+                databaseInfo.textContent = `${db.name} > ${view.name}`;
+                toolbar.style.display = 'flex';
+                const configBtn = document.createElement('button');
+                configBtn.textContent = '⚙️ Configurar Vista';
+                configBtn.onclick = showViewConfigModal;
+                toolbar.appendChild(configBtn);
+            } else if (currentViewType === 'board' && currentViewId) {
+                const view = db.views.find(v => v.id === currentViewId);
+                boardView.style.display = 'block';
+                renderBoard(table, view.config);
+                titleElement.textContent = view.name;
+                databaseInfo.style.display = 'block';
+                databaseInfo.textContent = `${db.name} > ${view.name}`;
+                toolbar.style.display = 'flex';
+                const configBtn = document.createElement('button');
+                configBtn.textContent = '⚙️ Configurar Vista';
+                configBtn.onclick = showViewConfigModal;
+                toolbar.appendChild(configBtn);
+            }
+        
+            titleElement.removeEventListener('dblclick', handleTitleDoubleClick);
+            titleElement.addEventListener('dblclick', handleTitleDoubleClick);
+        
+            updateEmptyState();
+            updateFieldSelectors();
+        }
+        
+        // Función auxiliar para manejar el doble clic
+        function handleTitleDoubleClick(e) {
+            const titleElement = e.target;
+            const db = getCurrentDatabase();
+        
+            if (currentViewType === 'table' && currentTableId) { // Tabla directa
+                const table = getCurrentTable();
+                if (table) {
+                    makeEditable(titleElement, 'name', 'table', table.id, currentDatabaseId);
+                }
+            } else if (currentViewType === 'table' && currentViewId) { // Vista "Tabla"
+                const view = db.views.find(v => v.id === currentViewId);
+                if (view) {
+                    makeEditable(titleElement, 'name', 'view', view.id, currentDatabaseId);
+                }
+            } else if (currentViewType === 'calendar' || currentViewType === 'board') { // Otras vistas
+                const view = db.views.find(v => v.id === currentViewId);
+                if (view) {
+                    makeEditable(titleElement, 'name', 'view', view.id, currentDatabaseId);
+                }
+            }
+        }
+    
+        function updateCalendarControls() {
+            const mode = document.getElementById('calendarModeControl').value;
+            const controlsContainer = document.getElementById('calendarModeControls');
+            const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        
+            // Obtener valores actuales de la vista
+            const db = getCurrentDatabase();
+            const view = db.views.find(v => v.id === currentViewId);
+            const initialMonth = parseInt(view.config.initialMonth) || calendarDate.getMonth();
+            const initialDay = view.config.initialDay ? parseInt(view.config.initialDay) : calendarDate.getDate();
+            const initialWeek = view.config.initialWeek ? parseInt(view.config.initialWeek) : 0;
+        
+            let html = `
+                <select id="calendarMonthControl" onchange="updateCalendarView()">
+                    ${months.map((mes, i) => `<option value="${i}" ${i === initialMonth ? 'selected' : ''}>${mes}</option>`).join('')}
+                </select>
+            `;
+        
+            if (mode === 'daily') {
+                const daysInMonth = new Date(calendarDate.getFullYear(), initialMonth + 1, 0).getDate();
+                html += `
+                    <select id="calendarDayControl" onchange="updateCalendarView()">
+                        ${Array.from({ length: daysInMonth }, (_, i) => 
+                            `<option value="${i + 1}" ${i + 1 === initialDay ? 'selected' : ''}>${i + 1}</option>`
+                        ).join('')}
+                    </select>
+                `;
+            } else if (mode === 'weekly') {
+                const weeks = getWeeksInMonth(initialMonth, calendarDate.getFullYear());
+                html += `
+                    <select id="calendarWeekControl" onchange="updateCalendarView()">
+                        ${weeks.map((week, i) => 
+                            `<option value="${i}" ${i === initialWeek ? 'selected' : ''}>Semana ${i + 1} (${week.start} - ${week.end})</option>`
+                        ).join('')}
+                    </select>
+                `;
+            }
+        
+            controlsContainer.innerHTML = html;
+        
+            // Actualizar la vista si el modo cambió
+            if (view.config.calendarMode !== mode) {
+                view.config.calendarMode = mode;
+                if (mode === 'daily') view.config.initialDay = initialDay;
+                else if (mode === 'weekly') view.config.initialWeek = initialWeek;
+                else {
+                    delete view.config.initialDay;
+                    delete view.config.initialWeek;
+                }
+                updateCalendarView();
+                saveToDatabase();
+            }
+        }
+        
+        // Asegúrate de que updateFieldSelectors llama a updateCalendarControls
+        function updateFieldSelectors() {
+            const table = getCurrentTable();
+            if (!table) return;
+        
+            const calendarFieldSelector = document.getElementById('fieldSelectorCalendar');
+            const boardFieldSelector = document.getElementById('fieldSelectorBoard');
+        
+            if (currentViewType === 'calendar') {
+                calendarFieldSelector.style.display = 'block';
+                updateCalendarControls(); // Renderizar controles cuando se muestra la vista de calendario
+            } else {
+                calendarFieldSelector.style.display = 'none';
+            }
+        
+            if (currentViewType === 'board') {
+                boardFieldSelector.style.display = 'block';
+            } else {
+                boardFieldSelector.style.display = 'none';
+            }
+        }
+    
+        function updateCalendarView() {
+            const db = getCurrentDatabase();
+            const view = db.views.find(v => v.id === currentViewId);
+            const table = getCurrentTable();
+    
+            const mode = document.getElementById('calendarModeControl').value;
+            const month = parseInt(document.getElementById('calendarMonthControl').value);
+            calendarDate.setMonth(month);
+    
+            if (mode === 'daily') {
+                const day = parseInt(document.getElementById('calendarDayControl').value);
+                calendarDate.setDate(day);
+                view.config.initialDay = day;
+                delete view.config.initialWeek;
+            } else if (mode === 'weekly') {
+                const weekIndex = parseInt(document.getElementById('calendarWeekControl').value);
+                const weeks = getWeeksInMonth(month, calendarDate.getFullYear());
+                const weekStart = weeks[weekIndex] ? weeks[weekIndex].start : 1;
+                calendarDate.setDate(weekStart);
+                view.config.initialWeek = weekIndex;
+                delete view.config.initialDay;
+            } else {
+                delete view.config.initialDay;
+                delete view.config.initialWeek;
+            }
+    
+            view.config.initialMonth = month;
+            view.config.calendarMode = mode;
+            renderCalendar(table, view.config);
+            saveToDatabase();
+        }
+    
+        function shiftCalendar(amount) {
+            const db = getCurrentDatabase();
+            const view = db.views.find(v => v.id === currentViewId);
+            const mode = document.getElementById('calendarModeControl').value;
+            const month = calendarDate.getMonth();
+            const year = calendarDate.getFullYear();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+            if (mode === 'daily') {
+                calendarDate.setDate(calendarDate.getDate() + amount);
+                if (calendarDate.getDate() > daysInMonth) calendarDate.setMonth(month + 1, 1);
+                if (calendarDate.getDate() < 1) calendarDate.setMonth(month - 1, new Date(year, month, 0).getDate());
+            } else if (mode === 'weekly') {
+                calendarDate.setDate(calendarDate.getDate() + (amount * 7));
+                const weeks = getWeeksInMonth(month, year);
+                if (calendarDate.getDate() > weeks[weeks.length - 1].end) calendarDate.setMonth(month + 1, 1);
+                if (calendarDate.getDate() < 1) calendarDate.setMonth(month - 1, new Date(year, month, 0).getDate());
+            } else {
+                calendarDate.setMonth(calendarDate.getMonth() + amount);
+            }
+    
+            view.config.initialMonth = calendarDate.getMonth();
+            if (mode === 'daily') view.config.initialDay = calendarDate.getDate();
+            else if (mode === 'weekly') {
+                const weeks = getWeeksInMonth(calendarDate.getMonth(), year);
+                view.config.initialWeek = weeks.findIndex(week => calendarDate.getDate() >= week.start && calendarDate.getDate() <= week.end) || 0;
+            }
+    
+            renderCalendar(getCurrentTable(), view.config);
+            updateCalendarControls(); // Actualizar los selectores
+            saveToDatabase();
+        }
+    
+        function renderCalendar(table, config = {}) {
+            const calendarView = document.getElementById('calendarView');
+            const mode = config.calendarMode || 'monthly';
+            const calendarFieldId = config.calendarFieldId;
+            const calendarTitle = document.getElementById('calendarTitle');
+        
+            if (!table || !calendarFieldId) {
+                calendarView.innerHTML = '<p class="empty-state">Configura un campo de fecha para esta vista de calendario</p>';
+                return;
+            }
+        
+            // Usar el mes inicial de la configuración si existe, o el mes actual como fallback
+            const initialMonth = config.initialMonth !== undefined ? config.initialMonth : calendarDate.getMonth();
+            calendarDate.setMonth(initialMonth); // Asegurar que calendarDate refleje el mes inicial
+        
+            const dateField = table.fields.find(f => f.id === calendarFieldId);
+            const visibleFields = config.visibleFields || new Set();
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        
+            let startDate, endDate, columns, title;
+            if (mode === 'daily') {
+                startDate = new Date(calendarDate);
+                startDate.setHours(0, 0, 0, 0);
+                if (config.initialDay) startDate.setDate(config.initialDay); // Respetar día inicial si existe
+                endDate = new Date(startDate);
+                columns = 1;
+                title = `${startDate.getDate()} de ${meses[startDate.getMonth()]} ${startDate.getFullYear()}`;
+                calendarView.style.maxWidth = '400px';
+                calendarView.style.margin = '0 auto';
+            } else if (mode === 'weekly') {
+                startDate = new Date(calendarDate);
+                if (config.initialWeek !== undefined) {
+                    const weeks = getWeeksInMonth(initialMonth, calendarDate.getFullYear());
+                    startDate.setDate(weeks[config.initialWeek]?.start || 1);
+                } else {
+                    startDate.setDate(calendarDate.getDate() - calendarDate.getDay());
+                }
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 6);
+                columns = 7;
+                title = `Semana del ${startDate.getDate()} de ${meses[startDate.getMonth()]} al ${endDate.getDate()} de ${meses[endDate.getMonth()]} ${endDate.getFullYear()}`;
+                calendarView.style.maxWidth = 'none';
+                calendarView.style.margin = '0';
+            } else {
+                startDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 1);
+                endDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 0);
+                columns = 7;
+                title = `${meses[calendarDate.getMonth()]} ${calendarDate.getFullYear()}`;
+                calendarView.style.maxWidth = 'none';
+                calendarView.style.margin = '0';
+            }
+        
+            calendarTitle.textContent = title;
+        
+            let calendarHTML = `
+                <div class="calendar-header" style="grid-template-columns: repeat(${columns}, 1fr)">
+                    ${mode === 'daily' ? '<div>Hoy</div>' : mode === 'weekly' ? 'Dom,Lun,Mar,Mié,Jue,Vie,Sáb'.split(',').map(day => `<div>${day}</div>`).join('') : 'Dom,Lun,Mar,Mié,Jue,Vie,Sáb'.split(',').map(day => `<div>${day}</div>`).join('')}
+                </div>
+                <div class="calendar-grid" style="grid-template-columns: repeat(${columns}, 1fr);">
+            `;
+    
+            if (mode === 'monthly') {
+                for (let i = 0; i < startDate.getDay(); i++) {
+                    const prevDate = new Date(startDate);
+                    prevDate.setDate(startDate.getDate() - (startDate.getDay() - i));
+                    const dateStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}-${String(prevDate.getDate()).padStart(2, '0')}`;
+                    calendarHTML += `<div class="calendar-day" data-date="${dateStr}" style="background: #f5f5f5" ondblclick="showNewRecordModal('${dateStr}')"><div class="calendar-day-header">${prevDate.getDate()}</div></div>`;
+                }
+            }
+    
+            const currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                const events = table.rows.map((row, index) => ({ row, index })).filter(({ row }) => row[dateField.id] === dateStr);
+    
+                calendarHTML += `
+                    <div class="calendar-day" data-date="${dateStr}" ondblclick="showNewRecordModal('${dateStr}')">
+                        <div class="calendar-day-header">${mode === 'daily' ? '' : currentDate.getDate()}</div>
+                        ${events.map(({ row, index }) => {
+                            const visibleContent = table.fields
+                                .filter(field => visibleFields.has(field.id))
+                                .map(field => `${getFieldTypeEmoji(field.type)} ${row[field.id] || '-'}`)
+                                .join('<br>');
+                            return `
+                                <div class="calendar-event" draggable="true" data-row-index="${index}" data-date="${dateStr}"
+                                    onclick="showEventDetails(${index}, '${dateStr}', event)">
+                                    ${visibleContent || 'Sin datos visibles - Click para detalles'}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+    
+            if (mode === 'monthly') {
+                while (currentDate.getDay() !== 0) {
+                    const nextDate = new Date(currentDate);
+                    const dateStr = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+                    calendarHTML += `<div class="calendar-day" data-date="${dateStr}" style="background: #f5f5f5" ondblclick="showNewRecordModal('${dateStr}')"><div class="calendar-day-header">${nextDate.getDate()}</div></div>`;
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+            }
+    
+            calendarHTML += '</div>';
+            calendarView.innerHTML = calendarHTML;
+    
+            setupCalendarDragAndDrop();
+        }
+    
+        function setupCalendarDragAndDrop() {
+            const calendarView = document.getElementById('calendarView');
+            const events = calendarView.querySelectorAll('.calendar-event');
+            const days = calendarView.querySelectorAll('.calendar-day');
+    
+            events.forEach(event => {
+                event.addEventListener('dragstart', (e) => {
+                    const rowIndex = event.dataset.rowIndex;
+                    e.dataTransfer.setData('text/plain', rowIndex);
+                    event.style.opacity = '0.5';
+                });
+    
+                event.addEventListener('dragend', (e) => {
+                    event.style.opacity = '1';
+                });
+            });
+    
+            days.forEach(day => {
+                day.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    day.style.background = day.style.background === '#f5f5f5' ? '#e5e5e5' : '#f0f0f0';
+                });
+    
+                day.addEventListener('dragleave', (e) => {
+                    day.style.background = day.style.background === '#e5e5e5' ? '#f5f5f5' : 'white';
+                });
+    
+                day.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const rowIndex = e.dataTransfer.getData('text/plain');
+                    const targetDate = day.dataset.date;
+                    day.style.background = day.style.background === '#e5e5e5' ? '#f5f5f5' : 'white';
+                    updateEventDate(rowIndex, targetDate);
+                });
+            });
+        }
+    
+        function updateEventDate(rowIndex, targetDate) {
+            const table = getCurrentTable();
+            if (!table) return;
+    
+            const db = getCurrentDatabase();
+            const view = db.views.find(v => v.id === currentViewId);
+            if (!view) return; // Añadido para prevenir errores si no hay vista
+    
+            const dateField = table.fields.find(f => f.id === view.config.calendarFieldId);
+            if (!dateField || !targetDate) return;
+    
+            const row = table.rows[rowIndex];
+            if (row) {
+                row[dateField.id] = targetDate;
+                renderCalendar(table, view.config); // Pasar ambos parámetros: table y config
+                saveToDatabase();
+            }
+        }
+    
+        function renderBoard(table, config) {
+            const boardView = document.getElementById('boardView');
+            const boardFieldId = config.boardFieldId;
+    
+            if (!table || !boardFieldId) {
+                boardView.innerHTML = '<p class="empty-state">Configura un campo de selección simple para esta vista tablero</p>';
+                return;
+            }
+    
+            const selectField = table.fields.find(f => f.id === boardFieldId);
+            const visibleFields = config.visibleFields || new Set();
+    
+            const columns = ['', ...(selectField.options || [])];
+            let boardHTML = '<div class="board-grid">';
+    
+            columns.forEach(option => {
+                const columnRows = table.rows.map((row, index) => ({ row, index })).filter(({ row }) => (row[selectField.id] || '') === option);
+                boardHTML += `
+                    <div class="board-column" data-option="${option}" ondblclick="showNewRecordModal(null, '${option}')">
+                        <h3>${option || 'Sin selección'}</h3>
+                        ${columnRows.map(({ row, index }) => {
+                            const visibleContent = table.fields
+                                .filter(field => visibleFields.has(field.id))
+                                .map(field => `${getFieldTypeEmoji(field.type)} ${row[field.id] || '-'}`)
+                                .join('<br>');
+                            return `
+                                <div class="board-card" draggable="true" data-row-index="${index}" data-option="${option}"
+                                    onclick="showEventDetails(${index}, null, event)">
+                                    ${visibleContent || 'Sin datos visibles - Click para detalles'}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            });
+    
+            boardHTML += '</div>';
+            boardView.innerHTML = boardHTML;
+    
+            setupBoardDragAndDrop();
+            setupBoardEventSelection();
+        }
+    
+        function setupBoardDragAndDrop() {
+            const boardView = document.getElementById('boardView');
+            const cards = boardView.querySelectorAll('.board-card');
+            const columns = boardView.querySelectorAll('.board-column');
+    
+            cards.forEach(card => {
+                card.addEventListener('dragstart', (e) => {
+                    const rowIndex = card.dataset.rowIndex;
+                    e.dataTransfer.setData('text/plain', rowIndex);
+                    card.style.opacity = '0.5';
+                });
+    
+                card.addEventListener('dragend', (e) => {
+                    card.style.opacity = '1';
+                });
+            });
+    
+            columns.forEach(column => {
+                column.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    column.style.background = '#f0f0f0';
+                });
+    
+                column.addEventListener('dragleave', (e) => {
+                    column.style.background = '#f7fafc';
+                });
+    
+                column.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const rowIndex = e.dataTransfer.getData('text/plain');
+                    const targetOption = column.dataset.option;
+                    column.style.background = '#f7fafc';
+                    updateBoardCardPosition(rowIndex, targetOption);
+                });
+            });
+        }
+    
+        function updateBoardCardPosition(rowIndex, targetOption) {
+            const table = getCurrentTable();
+            if (!table) return;
+    
+            const db = getCurrentDatabase();
+            const view = db.views.find(v => v.id === currentViewId);
+            if (!view) return; // Añadido para prevenir errores si no hay vista
+    
+            const selectField = table.fields.find(f => f.id === view.config.boardFieldId);
+            if (!selectField) return;
+    
+            const row = table.rows[rowIndex];
+            if (row) {
+                row[selectField.id] = targetOption || '';
+                renderBoard(table, view.config); // Pasar ambos parámetros: table y config
+                saveToDatabase();
+            }
+        }
+    
+        function setupBoardEventSelection() {
+            const boardView = document.getElementById('boardView');
+            const cards = boardView.querySelectorAll('.board-card');
+    
+            cards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const rowIndex = card.dataset.rowIndex;
+                    showEventDetails(rowIndex, null, e);
+                });
+            });
+        }
+    
+        function showEventDetails(eventIndex, date, e) {
+            if (e && e.type === 'click') e.stopPropagation();
+        
+            const table = getCurrentTable();
+            const event = table.rows[eventIndex];
+        
+            const detailsHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeEventDetails(event)">×</span>
+                        <h3>Detalles del Registro</h3>
+                        <form id="editEventForm">
+                            ${table.fields.map(field => `
+                                <div class="event-field ${field.type === 'textarea' ? 'textarea' : ''}">
+                                    <label>${getFieldTypeEmoji(field.type)} ${field.name}:</label>
+                                    ${renderEditField(field, event[field.id])}
+                                </div>
+                            `).join('')}
+                            <div class="modal-button-container">
+                                <button class="modal-button" type="button" onclick="saveEditEvent(${eventIndex})">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        
+            const existingModal = document.querySelector('.modal');
+            if (existingModal) existingModal.remove();
+            document.body.insertAdjacentHTML('beforeend', detailsHTML);
+        }
+    
+        function showNewRecordModal(date, option) {
+            const table = getCurrentTable();
+            const newRow = {};
+            table.fields.forEach(field => {
+                if (field.isID) {
+                    const maxId = table.rows.length > 0 ? Math.max(...table.rows.map(row => parseInt(row[field.id]) || 0)) : 0;
+                    newRow[field.id] = (maxId + 1).toString();
+                } else {
+                    newRow[field.id] = field.type === 'multi-select' ? [] : (field.type === 'single-select' ? (option || '') : (field.type === 'date' && date ? date : ''));
+                }
+            });
+        
+            const modalHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeNewRecordModal()">×</span>
+                        <h3>Crear Nuevo Registro</h3>
+                        <form id="newRecordForm">
+                            ${table.fields.map(field => `
+                                <div class="event-field ${field.type === 'textarea' ? 'textarea' : ''}">
+                                    <label>${getFieldTypeEmoji(field.type)} ${field.name}:</label>
+                                    ${renderEditField(field, newRow[field.id])}
+                                </div>
+                            `).join('')}
+                            <div class="modal-button-container">
+                                <button class="modal-button" type="button" onclick="saveNewRecord()">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+    
+        function saveNewRecord() {
+            const table = getCurrentTable();
+            const form = document.getElementById('newRecordForm');
+            const inputs = form.querySelectorAll('.cell-editor, .date-editor, input[type="checkbox"], textarea');
+        
+            const newRow = {};
+            table.fields.forEach((field, index) => {
+                const input = inputs[index];
+                let value = input.type === 'checkbox' ? input.checked : input.value;
+                if (input.tagName === 'SELECT' && input.multiple) {
+                    value = Array.from(input.selectedOptions).map(option => option.value) || [];
+                } else if (input.tagName === 'SELECT') {
+                    value = input.value || '';
+                }
+                newRow[field.id] = value;
+            });
+        
+            table.rows.push(newRow);
+            closeNewRecordModal();
+            renderCurrentView();
+            saveToDatabase();
+        }
+    
+        function closeNewRecordModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+    
+        function renderEditField(field, value) {
+            switch (field.type) {
+                case 'checkbox': 
+                    return `<input type="checkbox" class="cell-editor" ${value ? 'checked' : ''}>`;
+                case 'date': 
+                    return `<input type="date" class="date-editor" value="${value || ''}">`;
+                case 'number': 
+                    return `<input type="number" class="cell-editor" value="${value || ''}">`;
+                case 'single-select':
+                    return `
+                        <select class="cell-editor">
+                            ${field.options.map(opt => `
+                                <option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>
+                            `).join('')}
+                        </select>`;
+                case 'multi-select': 
+                    return `
+                        <select class="cell-editor" multiple size="${Math.min(field.options.length, 5)}">
+                            ${field.options.map(opt => `
+                                <option value="${opt}" ${Array.isArray(value) && value.includes(opt) ? 'selected' : ''}>${opt}</option>
+                            `).join('')}
+                        </select>`;
+                case 'text': 
+                    return `<input type="text" class="cell-editor" value="${value || ''}">`;
+                case 'textarea': 
+                    return `<textarea class="cell-editor" rows="3">${value || ''}</textarea>`;
+                default: 
+                    return `<input type="text" class="cell-editor" value="${value || ''}">`;
+            }
+        }
+    
+        function saveEditEvent(eventIndex) {
+            const table = getCurrentTable();
+            const form = document.getElementById('editEventForm');
+            const inputs = form.querySelectorAll('.cell-editor, .date-editor, input[type="checkbox"], textarea');
+        
+            inputs.forEach((input, index) => {
+                const fieldId = table.fields[index].id;
+                let value = input.type === 'checkbox' ? input.checked : input.value;
+                if (input.tagName === 'SELECT' && input.multiple) {
+                    value = Array.from(input.selectedOptions).map(option => option.value) || [];
+                } else if (input.tagName === 'SELECT') {
+                    value = input.value || '';
+                }
+                table.rows[eventIndex][fieldId] = value;
+            });
+        
+            closeEventDetails();
+            renderCurrentView();
+            saveToDatabase();
+        }
+    
+        function closeEventDetails(e) {
+            if (e) e.stopPropagation();
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+    
+        function showEditRecordModal(rowIndex) {
+            const table = getCurrentTable();
+            const row = table.rows[rowIndex];
+        
+            const modalHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeEditRecordModal()">×</span>
+                        <h3>Editar Registro</h3>
+                        <form id="editRecordForm">
+                            ${table.fields.map(field => `
+                                <div class="event-field ${field.type === 'textarea' ? 'textarea' : ''}">
+                                    <label>${getFieldTypeEmoji(field.type)} ${field.name}:</label>
+                                    ${renderEditField(field, row[field.id])}
+                                </div>
+                            `).join('')}
+                            <div class="event-field duplicate-field">
+                                <label>Duplicar registro:</label>
+                                <input type="checkbox" id="duplicateCheckbox">
+                            </div>
+                            <div class="modal-button-container">
+                                <button class="modal-button" type="button" onclick="saveEditRecord(${rowIndex})">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+    
+        function saveEditRecord(rowIndex) {
+            const table = getCurrentTable();
+            const form = document.getElementById('editRecordForm');
+            const inputs = form.querySelectorAll('.cell-editor, .date-editor, input[type="checkbox"]:not(#duplicateCheckbox), textarea');
+            const duplicateCheckbox = document.getElementById('duplicateCheckbox');
+        
+            // Actualizar el registro original
+            const updatedRow = {};
+            inputs.forEach((input, index) => {
+                const fieldId = table.fields[index].id;
+                let value = input.type === 'checkbox' ? input.checked : input.value;
+                if (input.tagName === 'SELECT' && input.multiple) {
+                    value = Array.from(input.selectedOptions).map(option => option.value) || [];
+                } else if (input.tagName === 'SELECT') {
+                    value = input.value || '';
+                }
+                updatedRow[fieldId] = value;
+            });
+        
+            // Aplicar los cambios al registro original
+            table.rows[rowIndex] = { ...table.rows[rowIndex], ...updatedRow };
+        
+            // Duplicar el registro si el checkbox está marcado
+            if (duplicateCheckbox && duplicateCheckbox.checked) {
+                const newRow = { ...updatedRow };
+                // Generar un nuevo ID único para el campo "ID"
+                const idField = table.fields.find(f => f.isID);
+                if (idField) {
+                    const maxId = table.rows.length > 0 ? Math.max(...table.rows.map(row => parseInt(row[idField.id]) || 0)) : 0;
+                    newRow[idField.id] = (maxId + 1).toString();
+                }
+                // Insertar el nuevo registro justo después del original
+                table.rows.splice(rowIndex + 1, 0, newRow);
+            }
+        
+            closeEditRecordModal();
+            renderCurrentView();
+            saveToDatabase();
+        }
+    
+        function closeEditRecordModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+
+        function setupDragAndDrop() {
+            const headerRow = document.getElementById('headerRow');
+            const headers = Array.from(headerRow.getElementsByTagName('th'));
+
+            headers.forEach(header => {
+                const handle = header.querySelector('.drag-handle');
+                if (!handle) return;
+
+                header.addEventListener('dragstart', (e) => {
+                    draggedColumn = header;
+                    header.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                header.addEventListener('dragend', (e) => {
+                    header.classList.remove('dragging');
+                    headers.forEach(h => h.classList.remove('drag-target'));
+                    draggedColumn = null;
+                });
+
+                header.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if (header !== draggedColumn) header.classList.add('drag-target');
+                });
+
+                header.addEventListener('dragleave', (e) => {
+                    header.classList.remove('drag-target');
+                });
+
+                header.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (draggedColumn && draggedColumn !== header) {
+                        const table = getCurrentTable();
+                        const fields = table.fields;
+                        const fromIndex = fields.findIndex(f => f.id === draggedColumn.dataset.fieldId);
+                        const toIndex = fields.findIndex(f => f.id === header.dataset.fieldId);
+
+                        const [movedField] = fields.splice(fromIndex, 1);
+                        fields.splice(toIndex, 0, movedField);
+
+                        renderTable(table);
+                        saveToDatabase();
+                    }
+                });
+            });
+        }
+
+        function updateCell(rowIndex, fieldId, value) {
+            const table = getCurrentTable();
+            if (!table) return;
+            table.rows[rowIndex][fieldId] = value;
+            // No renderizamos aquí, dejamos que el flujo natural continúe
+            saveToDatabase(); // Guardamos, pero el renderizado lo manejará el flujo posterior
+        }
+
+        function updateFieldName(fieldId, newName) {
+            const table = getCurrentTable();
+            if (!table) return;
+
+            const field = table.fields.find(f => f.id === fieldId);
+            if (field) {
+                field.name = newName.trim() || 'Nuevo Campo';
+                renderCurrentView();
+                saveToDatabase();
+            }
+        }
+
+        function updateEmptyState() {
+            const emptyState = document.getElementById('emptyState');
+            if (!currentDatabaseId) {
+                emptyState.innerHTML = '<h3>No hay bases de datos seleccionadas</h3><p>Selecciona o crea una base de datos para comenzar.</p>';
+                emptyState.style.display = 'block';
+            } else if (!getCurrentTable()) {
+                emptyState.innerHTML = '<h3>Selecciona una tabla o vista</h3><p>Haz clic en una tabla o vista en la sidebar.</p>';
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+        
+        function applyFieldVisibilityChanges() {
+            const table = getCurrentTable();
+            if (!table) return;
+        
+            const checkboxes = document.querySelectorAll('#fieldVisibilityList input[type="checkbox"]');
+            const newVisibleFields = new Set();
+            checkboxes.forEach(checkbox => {
+                const fieldId = checkbox.getAttribute('data-field-id');
+                if (checkbox.checked) {
+                    newVisibleFields.add(fieldId);
+                }
+            });
+        
+            table.visibleFields = newVisibleFields; // Actualizar el conjunto de campos visibles
+            renderTable(table); // Renderizar la tabla con los nuevos campos visibles
+            saveToDatabase();   // Guardar los cambios en el servidor
+            closeFieldVisibilityModal(); // Cerrar el modal
+        }        
+
+        function showFieldVisibilityModal() {
+            const table = getCurrentTable();
+            if (!table) return;
+        
+            const modalHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeFieldVisibilityModal()">×</span>
+                        <h3>Campos Visibles en Tabla</h3>
+                        <div id="fieldVisibilityList">
+                            ${table.fields.map(field => `
+                                <label class="field-visibility">
+                                    <input type="checkbox" data-field-id="${field.id}" ${table.visibleFields.has(field.id) ? 'checked' : ''}>
+                                    ${getFieldTypeEmoji(field.type)} ${field.name}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div class="modal-button-container">
+                            <button class="modal-button" onclick="applyFieldVisibilityChanges()">Guardar</button>
+                            <button class="modal-button" onclick="closeFieldVisibilityModal()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        
+            const existingModal = document.querySelector('.modal');
+            if (existingModal) existingModal.remove();
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+
+        function closeFieldVisibilityModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+
+        function showViewConfigModal() {
+            const db = getCurrentDatabase();
+            const view = db.views.find(v => v.id === currentViewId);
+            const table = db.tables.find(t => t.id === view.tableId);
+        
+            const modalHTML = `
+                <div class="modal">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <span class="close-btn" onclick="closeViewConfigModal()">×</span>
+                        <h3>Configurar Vista: ${view.name}</h3>
+                        <p style="color: #718096; margin-bottom: 1rem;">Base de Datos: ${db.name} > Tabla: ${table.name}</p>
+                        <div class="event-field">
+                            <label>Nombre:</label>
+                            <input type="text" id="viewName" value="${view.name}" class="cell-editor">
+                        </div>
+                        ${view.type === 'calendar' ? `
+                            <div class="event-field">
+                                <label>Campo de Fecha:</label>
+                                <select id="calendarFieldSelect">
+                                    <option value="">Selecciona un campo de fecha</option>
+                                    ${table.fields.filter(f => f.type === 'date').map(field => `
+                                        <option value="${field.id}" ${field.id === view.config.calendarFieldId ? 'selected' : ''}>${field.name}</option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        ` : view.type === 'board' ? `
+                            <div class="event-field">
+                                <label>Campo de Selección Simple:</label>
+                                <select id="boardFieldSelect">
+                                    <option value="">Selecciona un campo de selección simple</option>
+                                    ${table.fields.filter(f => f.type === 'single-select').map(field => `
+                                        <option value="${field.id}" ${field.id === view.config.boardFieldId ? 'selected' : ''}>${field.name}</option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        ` : ''} <!-- No necesitamos config adicional para "table" -->
+                        <h4>Campos Visibles:</h4>
+                        <div>
+                            ${table.fields.map(field => `
+                                <label class="field-visibility">
+                                    <input type="checkbox" value="${field.id}" ${view.config.visibleFields.has(field.id) ? 'checked' : ''}>
+                                    ${getFieldTypeEmoji(field.type)} ${field.name}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div class="modal-button-container">
+                            <button class="modal-button" onclick="saveViewConfig()">Guardar</button>
+                            <button class="modal-button" onclick="closeViewConfigModal()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        function saveViewConfig() {
+            const db = getCurrentDatabase();
+            const view = db.views.find(v => v.id === currentViewId);
+            const newName = document.getElementById('viewName').value.trim();
+
+            if (newName) view.name = newName;
+
+            if (view.type === 'calendar') {
+                const calendarFieldId = document.getElementById('calendarFieldSelect').value;
+                if (!calendarFieldId) {
+                    alert('Por favor, selecciona un campo de fecha.');
+                    return;
+                }
+                view.config.calendarFieldId = calendarFieldId;
+                // No necesitamos guardar initialMonth, initialDay ni initialWeek aquí, ya que se manejan en la vista
+            } else if (view.type === 'board') {
+                const boardFieldId = document.getElementById('boardFieldSelect').value;
+                if (!boardFieldId) {
+                    alert('Por favor, selecciona un campo de selección simple.');
+                    return;
+                }
+                view.config.boardFieldId = boardFieldId;
+            }
+
+            const checkboxes = document.querySelectorAll('.modal-content input[type="checkbox"]:checked');
+            view.config.visibleFields = new Set(Array.from(checkboxes).map(cb => cb.value));
+
+            closeViewConfigModal();
+            updateDatabasesList();
+            renderCurrentView();
+            saveToDatabase();
+        }
+
+        function closeViewConfigModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        }
+
+        function updateFieldSelectors() {
+            const table = getCurrentTable();
+            if (!table) return;
+
+            const calendarFieldSelector = document.getElementById('fieldSelectorCalendar');
+            const boardFieldSelector = document.getElementById('fieldSelectorBoard');
+
+            if (currentViewType === 'calendar') {
+                calendarFieldSelector.style.display = 'block';
+            } else {
+                calendarFieldSelector.style.display = 'none';
+            }
+
+            if (currentViewType === 'board') {
+                boardFieldSelector.style.display = 'block';
+            } else {
+                boardFieldSelector.style.display = 'none';
+            }
+        }
+
+        function setupResizeHandlers() {
+            const resizeHandles = document.querySelectorAll('.resize-handle');
+            let resizing = null;
+
+            resizeHandles.forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    resizing = handle;
+                    isResizing = true;
+                    const th = handle.closest('th');
+                    const fieldId = th.dataset.fieldId;
+                    const table = getCurrentTable();
+                    const field = table.fields.find(f => f.id === fieldId);
+                    const startX = e.clientX;
+                    let startWidth = field.width === 'auto' ? th.offsetWidth : parseInt(field.width, 10);
+
+                    function resize(e) {
+                        const delta = e.clientX - startX;
+                        const newWidth = Math.max(80, startWidth + delta);
+                        th.style.width = `${newWidth}px`;
+                        field.width = newWidth;
+                    }
+
+                    function stopResize() {
+                        document.removeEventListener('mousemove', resize);
+                        document.removeEventListener('mouseup', stopResize);
+                        resizing = null;
+                        isResizing = false;
+                        saveToDatabase();
+                    }
+
+                    document.addEventListener('mousemove', resize);
+                    document.addEventListener('mouseup', stopResize);
+                });
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            selectedDatabase = '';
+            loadFromDatabase(() => {
+                updateDatabaseSelect();
+                updateDatabasesList();
+                renderCurrentView();
+            });
+        });
+        
+        document.addEventListener('click', function(e) {
+            const selector = document.getElementById('fieldTypeSelector');
+            if (!selector.contains(e.target) && !e.target.matches('button')) {
+                selector.style.display = 'none';
+            }
+        });
+        
+    </script>
+</body>
+</html>
