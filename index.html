@@ -282,7 +282,7 @@
             color: #4a5568;
             display: flex;
             gap: 0.4rem;
-            font-size: 10px;
+            font-size: 14px;
         }
 
         button:hover {
@@ -889,22 +889,24 @@
         }
 
         .field-menu {
-            position: absolute;
-            background: white;
-            border: 1px solid #ccc;
-            padding: 0.5rem;
+            position: fixed; /* Cambiado de absolute a fixed */
             z-index: 1000;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+            min-width: 200px;
+            display: none;
         }
-
+        
         .field-menu div {
             padding: 0.5rem;
             cursor: pointer;
         }
-
+        
         .field-menu div:hover {
-            background: #f0f0f0;
+            background: #edf2f7;
         }
 
         .database-selector {
@@ -1060,16 +1062,194 @@
             align-self: flex-start; /* Alinea el checkbox al inicio (arriba) dentro de la columna derecha */
         }
         
+.admin-link {
+    padding: 0.5rem 0;
+    text-align: center;
+}
+
+.admin-link button {
+    width: 40px;
+    height: 40px;
+    background: transparent; /* Sin fondo */
+    color: #4a5568; /* Color gris oscuro consistente con el diseño */
+    border: 1px solid #e2e8f0; /* Borde sutil */
+    border-radius: 50%; /* Círculo */
+    cursor: pointer;
+    font-size: 1.2rem; /* Tamaño del ícono */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-link button:hover {
+    border-color: #63b3ed; /* Borde azul al pasar el mouse */
+    color: #63b3ed; /* Ícono azul al pasar el mouse */
+    transform: scale(1.1); /* Pequeño aumento para feedback */
+}
+
+.databases-list {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    padding: 1rem;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 0 12px 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Espacio entre elementos */
+}
+
+.admin-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: 1000;
+    display: none; /* Mantenemos el estilo inline inicial */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.admin-options {
+    display: flex;
+    gap: 1rem;
+}
+
+.admin-section button {
+    padding: 0.5rem 1rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #4a5568;
+    transition: background 0.2s ease;
+}
+
+.admin-section button:hover {
+    background: #edf2f7;
+}        
+        
+#errorAuditList div {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+#errorAuditList div strong {
+    color: #2d3748;
+}
+
+#errorAuditList div[style*="background: #fefcbf"] {
+    border-left: 4px solid #ecc94b; /* Borde amarillo para advertencias */
+}
+
+#errorAuditList div[style*="background: #fed7d7"] {
+    border-left: 4px solid #e53e3e; /* Borde rojo para errores */
+}        
+
+#backupModal .modal-content {
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#backupSelect {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    margin-bottom: 1rem;
+    appearance: none; /* Quitar estilo predeterminado en algunos navegadores */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    cursor: pointer;
+}
+
+#backupSelect:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#backupPreview {
+    margin-top: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #f7fafc;
+    padding: 0.5rem;
+    border-radius: 6px;
+    display: none;
+}
+
+.db-preview {
+    margin-bottom: 10px;
+}
+
+.db-preview h3 {
+    margin: 0 0 5px;
+    font-size: 16px;
+}
+
+.db-preview h4 {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.db-preview ul {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 5px 0;
+}
+
+.db-preview p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.modal-button-container {
+    margin-top: 1rem;
+    text-align: right;
+}
+
+.modal-button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-button:hover {
+    background-color: #0056b3;
+}       
     </style>
 </head>
 <body>
+
+    <!-- Lista de bases de datos (sidebar) -->
     <div class="databases-list">
         <div class="database-selector">
             <select id="databaseSelect" onchange="filterDatabases(this.value)">
                 <option value="all">Todas las bases de datos</option>
                 ${databases.map(db => `<option value="${db.id}">${db.name}</option>`).join('')}
             </select>
-            
         </div>
         <div class="database-list-content">
             <div id="databasesList"></div>
@@ -1077,15 +1257,20 @@
         <div class="logo">
             <img src="logo.png" alt="InfoSync Logo">
         </div>
+        <!-- Botón de administración debajo del logo -->
+        <div class="admin-link">
+            <button onclick="showAdminSection()" title="Administración">⚙️</button>
+        </div>
     </div>
 
+    <!-- Contenido principal -->
     <div class="main-content">
         <div class="container">
             <span class="database-title" id="databaseTitle" tabindex="0"></span>
             <p class="database-info" id="databaseInfo" style="color: #718096; font-size: 0.9rem; margin-bottom: 1rem;"></p>
 
             <div class="toolbar" id="toolbar">
-                <button id="fieldVisibilityBtn" onclick="showFieldVisibilityModal()" class="toolbar-table-only">👁️ Campos Visibles</button>
+                <button id="fieldVisibilityBtn" class="toolbar-table-only">👁️ Campos Visibles</button>
                 <div class="field-selector" id="fieldSelectorCalendar" style="display: none;">
                     <div class="calendar-navigation">
                         <button onclick="shiftCalendar(-1)">◄</button>
@@ -1101,6 +1286,13 @@
                 </div>
                 <div class="field-selector" id="fieldSelectorBoard" style="display: none;"></div>
             </div>
+            
+            <!-- Menú contextual para campos visibles -->
+            <div id="fieldVisibilityMenu" class="field-menu" style="display: none; position: absolute;">
+                <div id="fieldVisibilityList">
+                    <!-- Los campos visibles se generarán dinámicamente aquí -->
+                </div>
+            </div>
 
             <div class="field-type-selector" id="fieldTypeSelector">
                 <div class="field-type-option" data-type="text">📝 Texto Simple</div>
@@ -1115,7 +1307,7 @@
 
             <div id="tableView">
                 <table class="database-table" id="databaseTable">
-            <thead><tr id="headerRow"></tr></thead>
+                    <thead><tr id="headerRow"></tr></thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
@@ -1128,6 +1320,22 @@
                 <p>Haz clic en una base de datos, tabla o vista en la sidebar.</p>
             </div>
         </div>
+    </div>
+
+    <!-- Área de Administración -->
+    <div id="adminSection" class="admin-section" style="display: none;">
+        <h2>Administración</h2>
+        <div class="admin-options">
+            <button onclick="showBackupModal()">Gestionar Backups</button>
+            <button onclick="showErrorAuditModal()">Ver Registro de Errores</button>
+            <button onclick="showChangeHistoryModal()">Ver Historial de Cambios</button>
+        </div>
+        <button onclick="hideAdminSection()">Volver</button>
+    </div>
+
+    <div id="fieldContextMenu" class="field-menu">
+        <div onclick="editFieldFromMenu()">Editar campo</div>
+        <div onclick="deleteFieldFromMenu()">Eliminar campo</div>
     </div>
 
     <script>
@@ -1152,14 +1360,15 @@
             saveTimeout = setTimeout(() => {
                 saveToDatabase();
             }, 500); // Espera 500ms antes de guardar
-        }        
+        }
+       
     
         // Cargar datos iniciales desde la base de datos
         function loadFromDatabase(callback) {
             fetch('/api.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'action=load'
+                body: 'action=load&authorization=tu_clave_secreta' // Añadir autorización
             })
             .then(response => response.json())
             .then(data => {
@@ -1200,54 +1409,52 @@
                 callback();
             });
         }
+
+
         
         // Guardar datos en la base de datos
-        function saveToDatabase() {
-            const dataToSave = databases.map(db => {
-                const tables = (db.tables || []).map(table => ({
-                    ...table,
-                    visibleFields: Array.from(table.visibleFields || []) // Convertir Set a Array para JSON
-                }));
-                const views = (db.views || []).map(view => ({
-                    ...view,
-                    config: {
-                        ...view.config,
-                        visibleFields: Array.from(view.config.visibleFields || [])
-                    }
-                }));
-                return {
-                    ...db,
-                    tables,
-                    views,
-                    visibleFields: Array.from(db.visibleFields || [])
-                };
-            });
-            const jsonData = JSON.stringify(dataToSave);
-            console.log('Datos enviados a api.php:', jsonData);
-            fetch('/api.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'action=save&data=' + encodeURIComponent(jsonData)
-            })
-            .then(response => {
-                console.log('Respuesta del servidor:', response.status, response.statusText);
-                if (!response.ok) throw new Error('Error en la respuesta del servidor');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    console.log('Guardado exitoso, actualizando vista');
-                    renderCurrentView(); // Solo renderizamos la vista actual
-                } else {
-                    console.error('Error al guardar:', data.error);
-                    alert('Error al guardar los datos en el servidor: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error en la solicitud:', error);
-                alert('No hay conexión a internet o error del servidor: ' + error.message);
-            });
+async function saveToDatabase() {
+    const dataToSave = databases.map(db => {
+        const tables = (db.tables || []).map(table => ({
+            ...table,
+            visibleFields: Array.from(table.visibleFields || [])
+        }));
+        const views = (db.views || []).map(view => ({
+            ...view,
+            config: {
+                ...view.config,
+                visibleFields: Array.from(view.config.visibleFields || [])
+            }
+        }));
+        return {
+            ...db,
+            tables,
+            views,
+            visibleFields: Array.from(db.visibleFields || [])
+        };
+    });
+
+    console.log('Datos enviados a saveToDatabase:', dataToSave); // Depuración
+
+    try {
+        const response = await fetch('/api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'action=save&data=' + encodeURIComponent(JSON.stringify(dataToSave)) + '&authorization=tu_clave_secreta'
+        });
+        const result = await response.json();
+        if (result.success) {
+            console.log('Guardado exitoso:', result.message);
+            return true;
+        } else {
+            console.error('Error al guardar:', result.error);
+            return false;
         }
+    } catch (error) {
+        console.error('Error en la solicitud:', error);
+        return false;
+    }
+}
     
         function createNewDatabase() {
             const newDb = {
@@ -1296,7 +1503,8 @@
                 notification.style.opacity = '0';
                 setTimeout(() => notification.remove(), 500);
             }, 3000);
-        }    
+        }
+
     
         function toggleDatabaseExpansion(dbId) {
             databases.forEach(db => {
@@ -1329,35 +1537,27 @@
         
         function updateTableName(dbId, tableId, newName) {
             const db = databases.find(db => db.id === dbId);
-            if (db) {
-                const table = db.tables.find(t => t.id === tableId);
-                if (table) {
-                    table.name = newName.trim() || 'Tabla sin título';
-                    updateDatabasesList();
-                    renderCurrentView();
-                    debounceSave();
-                } else {
-                    console.error('Tabla no encontrada:', tableId);
-                }
-            } else {
-                console.error('Base de datos no encontrada:', dbId);
+            if (!db) return;
+        
+            const table = db.tables.find(t => t.id === tableId);
+            if (table) {
+                table.name = newName.trim() || 'Tabla sin título';
+                updateDatabasesList();
+                renderCurrentView();
+                debounceSave(); // Usar debounce en lugar de saveToDatabase directamente
             }
         }
         
         function updateViewName(dbId, viewId, newName) {
             const db = databases.find(db => db.id === dbId);
-            if (db) {
-                const view = db.views.find(v => v.id === viewId);
-                if (view) {
-                    view.name = newName.trim() || 'Vista sin título';
-                    updateDatabasesList();
-                    renderCurrentView();
-                    debounceSave();
-                } else {
-                    console.error('Vista no encontrada:', viewId);
-                }
-            } else {
-                console.error('Base de datos no encontrada:', dbId);
+            if (!db) return;
+        
+            const view = db.views.find(v => v.id === viewId);
+            if (view) {
+                view.name = newName.trim() || 'Vista sin título';
+                updateDatabasesList();
+                renderCurrentView();
+                debounceSave(); // Usar debounce en lugar de saveToDatabase directamente
             }
         }
     
@@ -1435,7 +1635,7 @@
                 if (db) {
                     listEl.innerHTML = `
                         <div class="database-item active">
-                            <span class="database-name">${db.name}</span>
+                            <span class="database-name" data-db-id="${db.id}">${db.name}</span>
                             <button class="delete-btn" onclick="event.stopPropagation(); deleteDatabase('${db.id}')">🗑️</button>
                         </div>
                         <div class="section-header" onclick="toggleTablesExpansion('${db.id}')">
@@ -1480,7 +1680,8 @@
                         name.addEventListener('dblclick', (e) => {
                             e.stopPropagation();
                             e.preventDefault();
-                            makeEditable(name, 'name', 'database', db.id);
+                            const dbId = name.getAttribute('data-db-id');
+                            makeEditable(name, 'name', 'database', dbId);
                         });
                     });
         
@@ -1601,87 +1802,133 @@
             }
         }
     
-        function showCreateViewModal(databaseId) {
-            const db = databases.find(d => d.id === databaseId);
-            if (!db || db.tables.length === 0) {
-                alert('Primero crea una tabla en esta base de datos.');
-                return;
-            }
-        
-            const modalHTML = `
-                <div class="modal">
-                    <div class="modal-content" onclick="event.stopPropagation()">
-                        <span class="close-btn" onclick="closeCreateViewModal()">×</span>
-                        <h3>Crear Nueva Vista</h3>
-                        <div class="event-field">
-                            <label>Tipo:</label>
-                            <select id="viewType" onchange="toggleViewConfig()">
-                                <option value="table">📋 Tabla</option>
-                                <option value="calendar">📅 Calendario</option>
-                                <option value="board">📊 Tablero</option>
-                            </select>
-                        </div>
-                        <div class="event-field">
-                            <label>Tabla:</label>
-                            <select id="viewTableSelect" onchange="updateFieldOptions('${databaseId}')">
-                                ${db.tables.map(table => `<option value="${table.id}">${table.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="event-field">
-                            <label>Nombre:</label>
-                            <input type="text" id="viewName" value="Vista sin título" class="cell-editor">
-                        </div>
-                        <div id="calendarConfig" style="display: none;">
-                            <div class="event-field">
-                                <label>Campo de Fecha:</label>
-                                <select id="calendarFieldSelect">
-                                    <option value="">Selecciona un campo de fecha</option>
-                                    <!-- Llenado dinámico por updateFieldOptions -->
-                                </select>
-                            </div>
-                            <div class="event-field">
-                                <label>Modo:</label>
-                                <select id="calendarMode" onchange="updateCalendarModeOptions()">
-                                    <option value="daily">Diaria</option>
-                                    <option value="weekly">Semanal</option>
-                                    <option value="monthly">Mensual</option>
-                                </select>
-                            </div>
-                            <div id="calendarModeOptions">
-                                <!-- Opciones dinámicas según el modo -->
-                            </div>
-                        </div>
-                        <div id="boardConfig" style="display: none;">
-                            <div class="event-field">
-                                <label>Campo de Selección Simple:</label>
-                                <select id="boardFieldSelect">
-                                    <option value="">Selecciona un campo de selección simple</option>
-                                    <!-- Llenado dinámico por updateFieldOptions -->
-                                </select>
-                            </div>
-                        </div>
-                        <h4>Campos Visibles:</h4>
-                        <div id="visibleFieldsCheckboxes">
-                            ${db.tables[0].fields.map(field => `
-                                <label class="field-visibility">
-                                    <input type="checkbox" value="${field.id}" checked>
-                                    ${getFieldTypeEmoji(field.type)} ${field.name}
-                                </label>
-                            `).join('')}
-                        </div>
-                        <div class="modal-button-container">
-                            <button class="modal-button" onclick="createView('${databaseId}')">Crear</button>
-                            <button class="modal-button" onclick="closeCreateViewModal()">Cancelar</button>
-                        </div>
+function showCreateViewModal(databaseId) {
+    const db = databases.find(d => d.id === databaseId);
+    if (!db || db.tables.length === 0) {
+        alert('Primero crea una tabla en esta base de datos.');
+        return;
+    }
+
+    // Eliminar cualquier modal existente para evitar duplicados
+    const existingModals = document.querySelectorAll('.modal');
+    console.log('Modales existentes antes de crear uno nuevo:', existingModals.length);
+    existingModals.forEach(modal => modal.remove());
+
+    const modalHTML = `
+        <div class="modal" id="createViewModal">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-btn">×</span>
+                <h3>Crear Nueva Vista</h3>
+                <div class="event-field">
+                    <label>Tipo:</label>
+                    <select id="viewType" onchange="toggleViewConfig()">
+                        <option value="table">📋 Tabla</option>
+                        <option value="calendar">📅 Calendario</option>
+                        <option value="board">📊 Tablero</option>
+                    </select>
+                </div>
+                <div class="event-field">
+                    <label>Tabla:</label>
+                    <select id="viewTableSelect" onchange="updateFieldOptions('${databaseId}')">
+                        ${db.tables.map(table => `<option value="${table.id}">${table.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="event-field">
+                    <label>Nombre:</label>
+                    <input type="text" id="viewName" value="Vista sin título" class="cell-editor">
+                </div>
+                <div id="calendarConfig" style="display: none;">
+                    <div class="event-field">
+                        <label>Campo de Fecha:</label>
+                        <select id="calendarFieldSelect">
+                            <option value="">Selecciona un campo de fecha</option>
+                        </select>
+                    </div>
+                    <div class="event-field">
+                        <label>Modo:</label>
+                        <select id="calendarMode" onchange="updateCalendarModeOptions()">
+                            <option value="daily">Diaria</option>
+                            <option value="weekly">Semanal</option>
+                            <option value="monthly">Mensual</option>
+                        </select>
+                    </div>
+                    <div id="calendarModeOptions"></div>
+                </div>
+                <div id="boardConfig" style="display: none;">
+                    <div class="event-field">
+                        <label>Campo de Selección Simple:</label>
+                        <select id="boardFieldSelect">
+                            <option value="">Selecciona un campo de selección simple</option>
+                        </select>
                     </div>
                 </div>
-            `;
-        
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-            updateFieldOptions(databaseId); // Llenar opciones iniciales
-            toggleViewConfig(); // Mostrar configuración inicial
-            updateCalendarModeOptions(); // Llenar opciones de modo inicial
+                <h4>Campos Visibles:</h4>
+                <div id="visibleFieldsCheckboxes">
+                    ${db.tables[0].fields.map(field => `
+                        <label class="field-visibility">
+                            <input type="checkbox" value="${field.id}" checked>
+                            ${getFieldTypeEmoji(field.type)} ${field.name}
+                        </label>
+                    `).join('')}
+                </div>
+                <div class="modal-button-container">
+                    <button id="createViewButton" class="modal-button" type="button">Crear</button>
+                    <button id="cancelCreateViewButton" class="modal-button" type="button">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Asignar eventos después de crear el modal
+    const createButton = document.getElementById('createViewButton');
+    const cancelButton = document.getElementById('cancelCreateViewButton');
+    const closeBtn = document.querySelector('#createViewModal .close-btn');
+    const modal = document.getElementById('createViewModal');
+    let isCreating = false;
+
+    createButton.onclick = function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (isCreating) {
+            console.log('Creación en progreso, ignorando clic adicional');
+            return;
         }
+        console.log('Botón Crear clickeado, ejecutando createView para databaseId:', databaseId);
+        isCreating = true;
+        createButton.disabled = true;
+        createView(databaseId, () => {
+            isCreating = false;
+            createButton.disabled = false;
+        });
+    };
+
+    cancelButton.onclick = function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        console.log('Botón Cancelar clickeado, cerrando modal');
+        closeCreateViewModal();
+    };
+
+    closeBtn.onclick = function(event) {
+        event.stopPropagation();
+        console.log('Clic en X, cerrando modal');
+        closeCreateViewModal();
+    };
+
+    // Cerrar al hacer clic fuera del modal
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            console.log('Clic fuera del modal, cerrando');
+            closeCreateViewModal();
+        }
+    });
+
+    updateFieldOptions(databaseId);
+    toggleViewConfig();
+    updateCalendarModeOptions();
+}
     
         function updateCalendarModeOptions() {
             const mode = document.getElementById('calendarMode').value;
@@ -1804,81 +2051,95 @@
             }
         }
     
-        function createView(databaseId) {
-            const db = databases.find(d => d.id === databaseId);
-            const tableId = document.getElementById('viewTableSelect').value;
-            const table = db.tables.find(t => t.id === tableId);
-            const viewName = document.getElementById('viewName').value.trim() || 'Vista sin título';
-            const viewType = document.getElementById('viewType').value;
-        
-            const newView = {
-                id: 'view_' + Date.now(),
-                name: viewName,
-                type: viewType,
-                tableId: tableId,
-                config: {
-                    visibleFields: new Set()
-                }
-            };
-        
-            if (viewType === 'calendar') {
-                const calendarFieldId = document.getElementById('calendarFieldSelect').value;
-                const calendarMode = document.getElementById('calendarMode').value;
-                const calendarMonth = parseInt(document.getElementById('calendarMonth').value);
-        
-                if (!calendarFieldId) {
-                    alert('Por favor, selecciona un campo de fecha.');
-                    return;
-                }
-        
-                newView.config.calendarFieldId = calendarFieldId;
-                newView.config.calendarMode = calendarMode;
-                newView.config.initialMonth = calendarMonth; // Guardar el mes seleccionado
-        
-                // Guardar configuraciones adicionales según el modo
-                if (calendarMode === 'daily') {
-                    const calendarDay = parseInt(document.getElementById('calendarDay').value);
-                    newView.config.initialDay = calendarDay;
-                } else if (calendarMode === 'weekly') {
-                    const calendarWeek = parseInt(document.getElementById('calendarWeek').value);
-                    newView.config.initialWeek = calendarWeek;
-                }
-            } else if (viewType === 'board') {
-                const boardFieldId = document.getElementById('boardFieldSelect').value;
-                if (!boardFieldId) {
-                    alert('Por favor, selecciona un campo de selección simple.');
-                    return;
-                }
-                newView.config.boardFieldId = boardFieldId;
-            } else if (viewType === 'table') {
-                // No necesitamos configuraciones adicionales para "Tabla", solo visibleFields
-                // Esto ya se maneja más abajo
-            }
-        
-            // Guardar campos visibles para todas las vistas
-            const checkboxes = document.querySelectorAll('#visibleFieldsCheckboxes input[type="checkbox"]:checked');
-            newView.config.visibleFields = new Set(Array.from(checkboxes).map(cb => cb.value));
-        
-            db.views.push(newView);
-            currentViewId = newView.id;
-            currentTableId = null; // Establecer como null porque estamos en una vista, no en una tabla directa
-            currentViewType = viewType;
-        
-            // Actualizar calendarDate con el mes seleccionado antes de renderizar (solo para "calendar")
-            if (viewType === 'calendar') {
-                calendarDate = new Date(new Date().getFullYear(), calendarMonth, 1); // Establecer el mes seleccionado
-            }
-        
-            closeCreateViewModal();
-            updateDatabasesList();
-            renderCurrentView();
-            saveToDatabase();
+function createView(databaseId, callback) {
+    console.log('Iniciando createView para databaseId:', databaseId);
+
+    const db = databases.find(d => d.id === databaseId);
+    const tableId = document.getElementById('viewTableSelect').value;
+    const table = db.tables.find(t => t.id === tableId);
+    const viewName = document.getElementById('viewName').value.trim() || 'Vista sin título';
+    const viewType = document.getElementById('viewType').value;
+
+    const newView = {
+        id: 'view_' + Date.now(),
+        name: viewName,
+        type: viewType,
+        tableId: tableId,
+        config: {
+            visibleFields: new Set()
         }
+    };
+
+    if (viewType === 'calendar') {
+        const calendarFieldId = document.getElementById('calendarFieldSelect').value;
+        const calendarMode = document.getElementById('calendarMode').value;
+        const calendarMonth = parseInt(document.getElementById('calendarMonth').value);
+
+        if (!calendarFieldId) {
+            alert('Por favor, selecciona un campo de fecha.');
+            if (callback) callback();
+            return;
+        }
+
+        newView.config.calendarFieldId = calendarFieldId;
+        newView.config.calendarMode = calendarMode;
+        newView.config.initialMonth = calendarMonth;
+
+        if (calendarMode === 'daily') {
+            const calendarDay = parseInt(document.getElementById('calendarDay').value);
+            newView.config.initialDay = calendarDay;
+        } else if (calendarMode === 'weekly') {
+            const calendarWeek = parseInt(document.getElementById('calendarWeek').value);
+            newView.config.initialWeek = calendarWeek;
+        }
+    } else if (viewType === 'board') {
+        const boardFieldId = document.getElementById('boardFieldSelect').value;
+        if (!boardFieldId) {
+            alert('Por favor, selecciona un campo de selección simple.');
+            if (callback) callback();
+            return;
+        }
+        newView.config.boardFieldId = boardFieldId;
+    }
+
+    const checkboxes = document.querySelectorAll('#visibleFieldsCheckboxes input[type="checkbox"]:checked');
+    newView.config.visibleFields = new Set(Array.from(checkboxes).map(cb => cb.value));
+
+    db.views.push(newView);
+    currentViewId = newView.id;
+    currentTableId = null;
+    currentViewType = viewType;
+
+    if (viewType === 'calendar') {
+        calendarDate = new Date(new Date().getFullYear(), calendarMonth, 1);
+    }
+
+    console.log('Vista creada, cerrando modal');
+    closeCreateViewModal();
+    console.log('Modal cerrado, actualizando vista');
+    updateDatabasesList();
+    renderCurrentView();
+    saveToDatabase().then(success => {
+        console.log('Resultado de saveToDatabase:', success);
+        if (callback) callback();
+    }).catch(error => {
+        console.error('Error en saveToDatabase:', error);
+        if (callback) callback();
+    });
+}
     
-        function closeCreateViewModal() {
-            const modal = document.querySelector('.modal');
-            if (modal) modal.remove();
-        }
+function closeCreateViewModal() {
+    const modal = document.getElementById('createViewModal');
+    console.log('Buscando #createViewModal para cerrar');
+    if (modal) {
+        console.log('Eliminando modal con ID: createViewModal');
+        modal.remove();
+    } else {
+        console.log('No se encontró #createViewModal en el DOM');
+    }
+    const remainingModals = document.querySelectorAll('.modal');
+    console.log('Modales restantes después de cerrar:', remainingModals.length, 'IDs:', Array.from(remainingModals).map(m => m.id || 'sin ID'));
+}
     
         function deleteTable(dbId, tableId) {
             if (confirm('¿Estás seguro de que deseas eliminar esta tabla? Se perderán todos los datos asociados.')) {
@@ -2321,7 +2582,7 @@
                     </td>
                     ${table.fields.filter(field => visibleFields.has(field.id)).map(field => {
                         let cellContent = '';
-                        const value = row[field.id];
+                        const value = row[field.id] || [];
                         if (field.isID) {
                             cellContent = `<div class="cell-view">${value || '-'}</div>`;
                         } else {
@@ -2377,6 +2638,7 @@
                 });
             });
         }
+
         
         function renderTableView(table, config) {
             const tableView = document.getElementById('tableView');
@@ -2483,32 +2745,31 @@
 
         function showFieldMenu(fieldId, event) {
             event.stopPropagation();
-            const menuHTML = `
-                <div class="field-menu" style="position: absolute; top: ${event.clientY}px; left: ${event.clientX}px;">
-                    <div onclick="editField('${fieldId}'); this.parentElement.remove()">Editar Campo</div>
-                    <div onclick="deleteField('${fieldId}'); this.parentElement.remove()">Eliminar Campo</div>
-                </div>
-            `;
-    
-            const existingMenu = document.querySelector('.field-menu');
-            if (existingMenu) existingMenu.remove();
-    
-            document.body.insertAdjacentHTML('beforeend', menuHTML);
-            const menu = document.querySelector('.field-menu');
-    
+            const menu = document.getElementById('fieldContextMenu');
+            
+            // Posicionar el menú debajo del botón
+            const rect = event.target.getBoundingClientRect();
+            menu.style.display = 'block';
+            menu.style.top = `${rect.bottom + window.scrollY}px`;
+            menu.style.left = `${rect.left + window.scrollX}px`;
+            
+            // Actualizar los controladores de eventos
+            menu._currentFieldId = fieldId;  // Almacenar fieldId en el menú
+            
+            // Cerrar el menú al hacer clic fuera
             document.addEventListener('click', function hideMenu(e) {
                 if (!menu.contains(e.target)) {
-                    menu.remove();
+                    menu.style.display = 'none';
                     document.removeEventListener('click', hideMenu);
                 }
-            });
+            }, { once: true });
         }
+
     
         function makeEditable(element, context, ...args) {
-            console.log('Editando:', { context, args }); // Depuración
+            console.log('Editando:', { context, args });
         
             if (context === 'cell') {
-                // Edición de celdas de tabla
                 const [rowIndex, fieldId] = args;
                 const table = getCurrentTable();
                 if (!table) {
@@ -2588,47 +2849,62 @@
                                 element.innerHTML = selectedValues.length ? selectedValues.join(', ') : '-';
                             });
         
-                            input.addEventListener('blur', () => {
+                            input.addEventListener('blur', async () => {
                                 const selectedValues = Array.from(input.selectedOptions).map(option => option.value);
-                                updateCell(rowIndex, fieldId, selectedValues);
-                                element.innerHTML = Array.isArray(selectedValues) ? selectedValues.join(', ') : (selectedValues || '-');
-                                renderCurrentView();
+                                const success = await updateCell(rowIndex, fieldId, selectedValues);
+                                if (success) {
+                                    element.innerHTML = Array.isArray(selectedValues) ? selectedValues.join(', ') : (selectedValues || '-');
+                                    renderCurrentView();
+                                }
                             });
         
-                            input.addEventListener('keydown', (e) => {
+                            input.addEventListener('keydown', async (e) => {
                                 if (e.key === 'Enter') {
                                     e.preventDefault();
                                     const selectedValues = Array.from(input.selectedOptions).map(option => option.value);
-                                    updateCell(rowIndex, fieldId, selectedValues);
-                                    element.innerHTML = selectedValues.length ? selectedValues.join(', ') : '-';
-                                    input.blur();
+                                    const success = await updateCell(rowIndex, fieldId, selectedValues);
+                                    if (success) {
+                                        element.innerHTML = selectedValues.length ? selectedValues.join(', ') : '-';
+                                        input.blur();
+                                    }
                                 }
                             });
                         } else {
-                            input.onblur = () => {
+                            input.onblur = async () => {
                                 let value = input.value;
-                                updateCell(rowIndex, fieldId, value);
-                                element.innerHTML = value || '-';
-                                renderCurrentView();
+                                const success = await updateCell(rowIndex, fieldId, value);
+                                if (success) {
+                                    element.innerHTML = value || '-';
+                                    renderCurrentView();
+                                }
                             };
-                            input.onchange = () => {
+                            input.onchange = async () => {
                                 let value = input.value;
-                                updateCell(rowIndex, fieldId, value);
-                                element.innerHTML = value || '-';
-                                renderCurrentView();
+                                const success = await updateCell(rowIndex, fieldId, value);
+                                if (success) {
+                                    element.innerHTML = value || '-';
+                                    renderCurrentView();
+                                }
                             };
                         }
                     } else if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
-                        input.onblur = () => {
+                        input.onblur = async () => {
                             let value = input.type === 'textarea' ? input.value : input.value;
-                            updateCell(rowIndex, fieldId, value);
-                            element.innerHTML = value || '-';
-                            renderCurrentView();
+                            const success = await updateCell(rowIndex, fieldId, value);
+                            if (success) {
+                                element.innerHTML = value || '-';
+                                renderCurrentView();
+                            }
                         };
-                        input.onkeydown = (e) => {
+                        input.onkeydown = async (e) => {
                             if (e.key === 'Enter') {
                                 e.preventDefault();
-                                input.blur();
+                                let value = input.type === 'textarea' ? input.value : input.value;
+                                const success = await updateCell(rowIndex, fieldId, value);
+                                if (success) {
+                                    element.innerHTML = value || '-';
+                                    input.blur();
+                                }
                             }
                         };
                     }
@@ -2636,123 +2912,72 @@
                     console.error('No se encontró el elemento de entrada después de insertar editorHTML:', editorHTML);
                 }
             } else if (context === 'name') {
-                // Edición de nombres en el sidebar o título principal
+                // Edición de nombres en el sidebar (bases de datos, tablas, vistas)
                 const [type, id, dbId = null] = args;
         
-                if (!id || !dbId) {
+                if (!id || (type !== 'database' && !dbId)) {
                     console.error('ID o dbId no proporcionados:', { type, id, dbId });
                     return;
                 }
-        
-                if (element.textContent.trim() === '') {
-                    console.error('El elemento no tiene contenido de texto.');
-                    return;
-                }
-        
-                // Limpiar cualquier listener previo para evitar reutilización
-                element.removeEventListener('blur', element.blurHandler);
-                element.removeEventListener('keydown', element.keydownHandler);
-                element.removeEventListener('click', element.clickHandler);
-                element.removeEventListener('keypress', element.keypressHandler);
         
                 element.setAttribute('contenteditable', 'true');
                 element.setAttribute('tabindex', '0');
                 setTimeout(() => {
                     element.focus();
-                    if (element.textContent) {
-                        const range = document.createRange();
-                        const selection = window.getSelection();
-                        range.selectNodeContents(element);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    }
+                    const range = document.createRange();
+                    const selection = window.getSelection();
+                    range.selectNodeContents(element);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
                 }, 0);
         
                 const originalText = element.textContent.trim();
         
-                // Crear una nueva instancia de saveChanges para cada edición
                 const saveChanges = () => {
                     const newText = element.textContent.trim() || (type === 'database' ? 'Base de Datos sin título' : type === 'table' ? 'Tabla sin título' : 'Vista sin título');
         
                     if (newText !== originalText) {
-                        const db = databases.find(db => db.id === dbId);
-                        if (!db) {
-                            console.error('Base de datos no encontrada:', dbId);
-                            return;
-                        }
-        
-                        switch (type) {
-                            case 'database':
-                                console.log('Actualizando base de datos:', { id, newText }); // Depuración
-                                updateDatabaseName(id, newText);
-                                break;
-                            case 'table':
-                                console.log('Actualizando tabla:', { id, newText, dbId }); // Depuración
+                        if (type === 'database') {
+                            updateDatabaseName(id, newText);
+                        } else {
+                            const db = databases.find(db => db.id === dbId);
+                            if (!db) {
+                                console.error('Base de datos no encontrada:', dbId);
+                                return;
+                            }
+                            if (type === 'table') {
                                 updateTableName(dbId, id, newText);
                                 // Actualizar título si es la tabla seleccionada
                                 if (currentTableId === id && currentViewType === 'table') {
                                     document.getElementById('databaseTitle').textContent = newText;
                                 }
-                                break;
-                            case 'view':
-                                console.log('Actualizando vista:', { id, newText, dbId }); // Depuración
+                            } else if (type === 'view') {
                                 updateViewName(dbId, id, newText);
                                 // Actualizar título si es la vista seleccionada
-                                if (currentViewId === id && (currentViewType === 'calendar' || currentViewType === 'board')) {
+                                if (currentViewId === id) {
                                     document.getElementById('databaseTitle').textContent = newText;
                                 }
-                                break;
-                            default:
-                                console.error('Tipo no válido en makeEditable:', type);
+                            }
                         }
                     }
         
-                    // Limpiar atributos y eventos
                     element.removeAttribute('contenteditable');
                     element.removeAttribute('tabindex');
-                    element.removeEventListener('blur', blurHandler);
-                    element.removeEventListener('keydown', keydownHandler);
-                    element.removeEventListener('click', clickHandler);
-                    element.removeEventListener('keypress', keypressHandler);
-        
+                    element.removeEventListener('blur', saveChanges);
+                    element.removeEventListener('keydown', handleKeydown);
                     updateDatabasesList(); // Actualizar sidebar
-                    renderCurrentView();   // Actualizar vista principal
+                    if (type !== 'database') renderCurrentView(); // Actualizar vista principal solo si no es base de datos
                 };
         
-                // Definir handlers específicos para esta edición
-                const blurHandler = () => {
-                    saveChanges();
-                };
-        
-                const keydownHandler = (e) => {
+                const handleKeydown = (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        saveChanges();
                         element.blur();
                     }
                 };
         
-                const clickHandler = (e) => {
-                    e.stopPropagation();
-                };
-        
-                const keypressHandler = (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                    }
-                };
-        
-                // Asignar handlers y almacenarlos para limpieza
-                element.addEventListener('blur', blurHandler);
-                element.addEventListener('keydown', keydownHandler);
-                element.addEventListener('click', clickHandler, { once: true });
-                element.addEventListener('keypress', keypressHandler);
-        
-                // Almacenar referencias para limpieza futura (opcional)
-                element.blurHandler = blurHandler;
-                element.keydownHandler = keydownHandler;
-                element.clickHandler = clickHandler;
-                element.keypressHandler = keypressHandler;
+                element.addEventListener('blur', saveChanges, { once: true });
+                element.addEventListener('keydown', handleKeydown, { once: true });
             } else {
                 console.error('Contexto no válido en makeEditable:', context);
             }
@@ -2768,96 +2993,103 @@
             }
         }
     
-        function renderCurrentView() {
-            const tableView = document.getElementById('tableView');
-            const calendarView = document.getElementById('calendarView');
-            const boardView = document.getElementById('boardView');
-            const titleElement = document.getElementById('databaseTitle');
-            const databaseInfo = document.getElementById('databaseInfo');
-            const toolbar = document.getElementById('toolbar');
-        
-            tableView.style.display = 'none';
-            calendarView.style.display = 'none';
-            boardView.style.display = 'none';
-            toolbar.style.display = 'none'; // Por defecto, ocultar la toolbar
-        
-            // Limpiar botones dinámicos y ocultar "Campos Visibles" inicialmente
-            toolbar.querySelectorAll('button:not(.toolbar-table-only)').forEach(btn => btn.remove());
-            const fieldVisibilityBtn = document.getElementById('fieldVisibilityBtn');
-            if (fieldVisibilityBtn) fieldVisibilityBtn.style.display = 'none'; // Ocultar por defecto
-        
-            if (!currentDatabaseId) {
-                titleElement.style.display = 'none';
-                databaseInfo.style.display = 'none';
-                updateEmptyState();
-                return;
-            }
-        
-            const db = getCurrentDatabase();
-            const table = getCurrentTable();
-            if (!table && !currentViewId) {
-                titleElement.style.display = 'none';
-                databaseInfo.style.display = 'none';
-                updateEmptyState();
-                return;
-            }
-        
-            titleElement.style.display = 'block';
-        
-            if (currentViewType === 'table' && currentTableId) {
-                tableView.style.display = 'block';
-                renderTable(table);
-                titleElement.textContent = table.name;
-                databaseInfo.style.display = 'none';
-                toolbar.style.display = 'flex'; // Mostrar toolbar
-                if (fieldVisibilityBtn) fieldVisibilityBtn.style.display = 'flex'; // Mostrar "Campos Visibles"
-            } else if (currentViewType === 'table' && currentViewId) { // Nueva vista "Tabla"
-                const view = db.views.find(v => v.id === currentViewId);
-                tableView.style.display = 'block';
-                renderTableView(table, view.config);
-                titleElement.textContent = view.name;
-                databaseInfo.style.display = 'block';
-                databaseInfo.textContent = `${db.name} > ${view.name}`;
-                toolbar.style.display = 'flex';
-                const configBtn = document.createElement('button');
-                configBtn.textContent = '⚙️ Configurar Vista';
-                configBtn.onclick = showViewConfigModal;
-                toolbar.appendChild(configBtn);
-            } else if (currentViewType === 'calendar' && currentViewId) {
-                const view = db.views.find(v => v.id === currentViewId);
-                calendarView.style.display = 'block';
-                if (view.config.initialMonth !== undefined) {
-                    calendarDate = new Date(new Date().getFullYear(), view.config.initialMonth, 1);
-                }
-                renderCalendar(table, view.config);
-                titleElement.textContent = view.name;
-                databaseInfo.style.display = 'block';
-                databaseInfo.textContent = `${db.name} > ${view.name}`;
-                toolbar.style.display = 'flex';
-                const configBtn = document.createElement('button');
-                configBtn.textContent = '⚙️ Configurar Vista';
-                configBtn.onclick = showViewConfigModal;
-                toolbar.appendChild(configBtn);
-            } else if (currentViewType === 'board' && currentViewId) {
-                const view = db.views.find(v => v.id === currentViewId);
-                boardView.style.display = 'block';
-                renderBoard(table, view.config);
-                titleElement.textContent = view.name;
-                databaseInfo.style.display = 'block';
-                databaseInfo.textContent = `${db.name} > ${view.name}`;
-                toolbar.style.display = 'flex';
-                const configBtn = document.createElement('button');
-                configBtn.textContent = '⚙️ Configurar Vista';
-                configBtn.onclick = showViewConfigModal;
-                toolbar.appendChild(configBtn);
-            }
-        
-            titleElement.removeEventListener('dblclick', handleTitleDoubleClick);
-            titleElement.addEventListener('dblclick', handleTitleDoubleClick);
-        
-            updateEmptyState();
-            updateFieldSelectors();
+function renderCurrentView() {
+    const db = databases.find(db => db.id === currentDatabaseId);
+    const tableView = document.getElementById('tableView');
+    const calendarView = document.getElementById('calendarView');
+    const boardView = document.getElementById('boardView');
+    const titleElement = document.getElementById('databaseTitle');
+    const databaseInfo = document.getElementById('databaseInfo');
+    const toolbar = document.getElementById('toolbar');
+    const fieldVisibilityBtn = document.getElementById('fieldVisibilityBtn');
+
+    // Validar que los elementos principales existan
+    if (!tableView || !calendarView || !boardView || !titleElement || !databaseInfo || !toolbar) {
+        console.error('Uno o más elementos del DOM no están disponibles:', {
+            tableView, calendarView, boardView, titleElement, databaseInfo, toolbar
+        });
+        return;
+    }
+
+    // Limpiar vistas previas
+    tableView.style.display = 'none';
+    calendarView.style.display = 'none';
+    boardView.style.display = 'none';
+    toolbar.style.display = 'none';
+    if (fieldVisibilityBtn) fieldVisibilityBtn.style.display = 'none';
+
+    // Preservar fieldSelectorCalendar y fieldSelectorBoard, solo eliminar botones adicionales
+    const preservedElements = ['fieldVisibilityBtn', 'fieldSelectorCalendar', 'fieldSelectorBoard'];
+    Array.from(toolbar.children).forEach(child => {
+        if (!preservedElements.includes(child.id)) {
+            toolbar.removeChild(child);
         }
+    });
+
+    if (!db || (!currentTableId && !currentViewId)) {
+        titleElement.textContent = '';
+        databaseInfo.style.display = 'none';
+        updateEmptyState();
+        return;
+    }
+
+    const table = getCurrentTable();
+    if (!table) return;
+
+    if (currentViewType === 'table' && currentTableId) {
+        tableView.style.display = 'block';
+        renderTable(table);
+        titleElement.textContent = table.name;
+        databaseInfo.style.display = 'none';
+        toolbar.style.display = 'flex';
+        if (fieldVisibilityBtn) fieldVisibilityBtn.style.display = 'flex';
+    } else if (currentViewType === 'table' && currentViewId) {
+        const view = db.views.find(v => v.id === currentViewId);
+        tableView.style.display = 'block';
+        renderTableView(table, view.config);
+        titleElement.textContent = view.name;
+        databaseInfo.style.display = 'block';
+        databaseInfo.textContent = `${db.name} > ${view.name}`;
+        toolbar.style.display = 'flex';
+        const configBtn = document.createElement('button');
+        configBtn.textContent = '⚙️ Configurar Vista';
+        configBtn.onclick = showViewConfigModal;
+        toolbar.appendChild(configBtn);
+    } else if (currentViewType === 'calendar' && currentViewId) {
+        const view = db.views.find(v => v.id === currentViewId);
+        calendarView.style.display = 'block';
+        if (view.config.initialMonth !== undefined) {
+            calendarDate = new Date(new Date().getFullYear(), view.config.initialMonth, 1);
+        }
+        renderCalendar(table, view.config);
+        titleElement.textContent = view.name;
+        databaseInfo.style.display = 'block';
+        databaseInfo.textContent = `${db.name} > ${view.name}`;
+        toolbar.style.display = 'flex';
+        const configBtn = document.createElement('button');
+        configBtn.textContent = '⚙️ Configurar Vista';
+        configBtn.onclick = showViewConfigModal;
+        toolbar.appendChild(configBtn);
+    } else if (currentViewType === 'board' && currentViewId) {
+        const view = db.views.find(v => v.id === currentViewId);
+        boardView.style.display = 'block';
+        renderBoard(table, view.config);
+        titleElement.textContent = view.name;
+        databaseInfo.style.display = 'block';
+        databaseInfo.textContent = `${db.name} > ${view.name}`;
+        toolbar.style.display = 'flex';
+        const configBtn = document.createElement('button');
+        configBtn.textContent = '⚙️ Configurar Vista';
+        configBtn.onclick = showViewConfigModal;
+        toolbar.appendChild(configBtn);
+    }
+
+    titleElement.removeEventListener('dblclick', handleTitleDoubleClick);
+    titleElement.addEventListener('dblclick', handleTitleDoubleClick);
+
+    updateEmptyState();
+    updateFieldSelectors();
+}
         
         // Función auxiliar para manejar el doble clic
         function handleTitleDoubleClick(e) {
@@ -2944,17 +3176,25 @@
             const calendarFieldSelector = document.getElementById('fieldSelectorCalendar');
             const boardFieldSelector = document.getElementById('fieldSelectorBoard');
         
-            if (currentViewType === 'calendar') {
-                calendarFieldSelector.style.display = 'block';
-                updateCalendarControls(); // Renderizar controles cuando se muestra la vista de calendario
+            // Validar que los elementos existan antes de modificarlos
+            if (calendarFieldSelector) {
+                if (currentViewType === 'calendar') {
+                    calendarFieldSelector.style.display = 'block';
+                } else {
+                    calendarFieldSelector.style.display = 'none';
+                }
             } else {
-                calendarFieldSelector.style.display = 'none';
+                console.warn('Elemento fieldSelectorCalendar no encontrado en el DOM');
             }
         
-            if (currentViewType === 'board') {
-                boardFieldSelector.style.display = 'block';
+            if (boardFieldSelector) {
+                if (currentViewType === 'board') {
+                    boardFieldSelector.style.display = 'block';
+                } else {
+                    boardFieldSelector.style.display = 'none';
+                }
             } else {
-                boardFieldSelector.style.display = 'none';
+                console.warn('Elemento fieldSelectorBoard no encontrado en el DOM');
             }
         }
     
@@ -3454,81 +3694,146 @@
             if (modal) modal.remove();
         }
     
-        function showEditRecordModal(rowIndex) {
-            const table = getCurrentTable();
-            const row = table.rows[rowIndex];
-        
-            const modalHTML = `
-                <div class="modal">
-                    <div class="modal-content" onclick="event.stopPropagation()">
-                        <span class="close-btn" onclick="closeEditRecordModal()">×</span>
-                        <h3>Editar Registro</h3>
-                        <form id="editRecordForm">
-                            ${table.fields.map(field => `
-                                <div class="event-field ${field.type === 'textarea' ? 'textarea' : ''}">
-                                    <label>${getFieldTypeEmoji(field.type)} ${field.name}:</label>
-                                    ${renderEditField(field, row[field.id])}
-                                </div>
-                            `).join('')}
-                            <div class="event-field duplicate-field">
-                                <label>Duplicar registro:</label>
-                                <input type="checkbox" id="duplicateCheckbox">
-                            </div>
-                            <div class="modal-button-container">
-                                <button class="modal-button" type="button" onclick="saveEditRecord(${rowIndex})">Guardar</button>
-                            </div>
-                        </form>
+function showEditRecordModal(rowIndex) {
+    const table = getCurrentTable();
+    const row = table.rows[rowIndex];
+
+    // Eliminar solo el modal de edición existente, si lo hay
+    const existingEditModal = document.getElementById('editRecordModal');
+    if (existingEditModal) {
+        console.log('Eliminando modal de edición previo');
+        existingEditModal.remove();
+    }
+
+    const modalHTML = `
+        <div class="modal" id="editRecordModal">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-btn" onclick="closeEditRecordModal()">×</span>
+                <h3>Editar Registro</h3>
+                <form id="editRecordForm">
+                    ${table.fields.map(field => `
+                        <div class="event-field ${field.type === 'textarea' ? 'textarea' : ''}">
+                            <label>${getFieldTypeEmoji(field.type)} ${field.name}:</label>
+                            ${renderEditField(field, row[field.id])}
+                        </div>
+                    `).join('')}
+                    <div class="event-field duplicate-field">
+                        <label>Duplicar registro:</label>
+                        <input type="checkbox" id="duplicateCheckbox">
                     </div>
-                </div>
-            `;
-        
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
+                    <div class="modal-button-container">
+                        <button id="saveEditButton" class="modal-button" type="button">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    const saveButton = document.getElementById('saveEditButton');
+    let isProcessing = false;
+
+    saveButton.onclick = function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (isProcessing) {
+            console.log('Procesamiento en curso, ignorando clic adicional');
+            return;
         }
-    
-        function saveEditRecord(rowIndex) {
-            const table = getCurrentTable();
-            const form = document.getElementById('editRecordForm');
-            const inputs = form.querySelectorAll('.cell-editor, .date-editor, input[type="checkbox"]:not(#duplicateCheckbox), textarea');
-            const duplicateCheckbox = document.getElementById('duplicateCheckbox');
-        
-            // Actualizar el registro original
-            const updatedRow = {};
-            inputs.forEach((input, index) => {
-                const fieldId = table.fields[index].id;
-                let value = input.type === 'checkbox' ? input.checked : input.value;
-                if (input.tagName === 'SELECT' && input.multiple) {
-                    value = Array.from(input.selectedOptions).map(option => option.value) || [];
-                } else if (input.tagName === 'SELECT') {
-                    value = input.value || '';
-                }
-                updatedRow[fieldId] = value;
-            });
-        
-            // Aplicar los cambios al registro original
-            table.rows[rowIndex] = { ...table.rows[rowIndex], ...updatedRow };
-        
-            // Duplicar el registro si el checkbox está marcado
-            if (duplicateCheckbox && duplicateCheckbox.checked) {
-                const newRow = { ...updatedRow };
-                // Generar un nuevo ID único para el campo "ID"
-                const idField = table.fields.find(f => f.isID);
-                if (idField) {
-                    const maxId = table.rows.length > 0 ? Math.max(...table.rows.map(row => parseInt(row[idField.id]) || 0)) : 0;
-                    newRow[idField.id] = (maxId + 1).toString();
-                }
-                // Insertar el nuevo registro justo después del original
-                table.rows.splice(rowIndex + 1, 0, newRow);
-            }
-        
+        console.log('Botón Guardar clickeado, ejecutando saveEditRecord para rowIndex:', rowIndex);
+        isProcessing = true;
+        saveButton.disabled = true;
+        saveEditRecord(rowIndex, () => {
+            isProcessing = false;
+            saveButton.disabled = false;
+        });
+    };
+
+    const modal = document.getElementById('editRecordModal');
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal && !isProcessing) {
+            console.log('Clic fuera del modal, cerrando');
             closeEditRecordModal();
-            renderCurrentView();
-            saveToDatabase();
         }
+    });
+}
     
-        function closeEditRecordModal() {
-            const modal = document.querySelector('.modal');
-            if (modal) modal.remove();
+function saveEditRecord(rowIndex, callback) {
+    const table = getCurrentTable();
+    const form = document.getElementById('editRecordForm');
+    const inputs = form.querySelectorAll('.cell-editor, .date-editor, input[type="checkbox"]:not(#duplicateCheckbox), textarea');
+    const duplicateCheckbox = document.getElementById('duplicateCheckbox');
+
+    const updatedRow = {};
+    inputs.forEach((input, index) => {
+        const fieldId = table.fields[index].id;
+        let value = input.type === 'checkbox' ? input.checked : input.value;
+        if (input.tagName === 'SELECT' && input.multiple) {
+            value = Array.from(input.selectedOptions).map(option => option.value) || [];
+        } else if (input.tagName === 'SELECT') {
+            value = input.value || '';
         }
+        updatedRow[fieldId] = value;
+    });
+
+    table.rows[rowIndex] = { ...table.rows[rowIndex], ...updatedRow };
+
+    if (duplicateCheckbox && duplicateCheckbox.checked) {
+        const newRow = { ...updatedRow };
+        const idField = table.fields.find(f => f.isID);
+        if (idField) {
+            const maxId = table.rows.length > 0 ? Math.max(...table.rows.map(row => parseInt(row[idField.id]) || 0)) : 0;
+            newRow[idField.id] = (maxId + 1).toString();
+        }
+        table.rows.splice(rowIndex + 1, 0, newRow);
+    }
+
+    // Actualizar databases con la tabla modificada
+    const dbIndex = databases.findIndex(db => db.id === selectedDatabase);
+    if (dbIndex !== -1) {
+        databases[dbIndex].tables = databases[dbIndex].tables.map(t => 
+            t.id === table.id ? { ...t, rows: table.rows } : t
+        );
+    }
+
+    console.log('Guardado en curso, cerrando modal inmediatamente');
+    closeEditRecordModal();
+
+    return saveToDatabase().then(success => {
+        console.log('Resultado de saveToDatabase:', success);
+        if (success) {
+            console.log('Guardado exitoso, actualizando vista');
+            renderCurrentView();
+        } else {
+            console.error('Fallo al guardar en saveToDatabase');
+            alert('Error al guardar los cambios.');
+            showEditRecordModal(rowIndex);
+        }
+        if (callback) callback();
+        return success;
+    }).catch(error => {
+        console.error('Error en saveToDatabase:', error);
+        alert('Error inesperado al guardar: ' + error.message);
+        showEditRecordModal(rowIndex);
+        if (callback) callback();
+        return false;
+    });
+}
+    
+function closeEditRecordModal() {
+    const modal = document.getElementById('editRecordModal'); // Solo el modal de edición
+    console.log('Buscando #editRecordModal para cerrar');
+    if (modal) {
+        console.log('Eliminando modal con ID: editRecordModal');
+        modal.style.display = 'none'; // Ocultar inmediatamente
+        modal.remove(); // Eliminar del DOM
+    } else {
+        console.log('No se encontró #editRecordModal en el DOM');
+    }
+    const remainingModals = document.querySelectorAll('.modal');
+    console.log('Modales restantes después de cerrar:', remainingModals.length, 'IDs:', Array.from(remainingModals).map(m => m.id));
+}
 
         function setupDragAndDrop() {
             const headerRow = document.getElementById('headerRow');
@@ -3577,23 +3882,23 @@
             });
         }
 
-        function updateCell(rowIndex, fieldId, value) {
+        async function updateCell(rowIndex, fieldId, value) {
             const table = getCurrentTable();
-            if (!table) return;
+            if (!table) return false;
             table.rows[rowIndex][fieldId] = value;
-            // No renderizamos aquí, dejamos que el flujo natural continúe
-            saveToDatabase(); // Guardamos, pero el renderizado lo manejará el flujo posterior
+            const success = await saveToDatabase(); // Esperar el resultado
+            return success; // Retornar si fue exitoso
         }
 
         function updateFieldName(fieldId, newName) {
             const table = getCurrentTable();
             if (!table) return;
-
+        
             const field = table.fields.find(f => f.id === fieldId);
             if (field) {
                 field.name = newName.trim() || 'Nuevo Campo';
                 renderCurrentView();
-                saveToDatabase();
+                debounceSave(); // Usar debounce en lugar de saveToDatabase directamente
             }
         }
 
@@ -3626,8 +3931,7 @@
             table.visibleFields = newVisibleFields; // Actualizar el conjunto de campos visibles
             renderTable(table); // Renderizar la tabla con los nuevos campos visibles
             saveToDatabase();   // Guardar los cambios en el servidor
-            closeFieldVisibilityModal(); // Cerrar el modal
-        }        
+        }
 
         function showFieldVisibilityModal() {
             const table = getCurrentTable();
@@ -3816,21 +4120,425 @@
             });
         }
         
-        document.addEventListener('DOMContentLoaded', () => {
-            selectedDatabase = '';
+document.addEventListener('DOMContentLoaded', () => {
+    selectedDatabase = '';
+    loadFromDatabase(() => {
+        updateDatabaseSelect();
+        updateDatabasesList();
+        renderCurrentView();
+    });
+
+    // Asignar eventos a los botones de administración
+    const adminSection = document.getElementById('adminSection');
+    if (adminSection) {
+        const backupButton = adminSection.querySelector('.admin-options button:nth-child(1)');
+        const errorButton = adminSection.querySelector('.admin-options button:nth-child(2)');
+        const historyButton = adminSection.querySelector('.admin-options button:nth-child(3)');
+
+        if (backupButton) backupButton.onclick = showBackupModal;
+        if (errorButton) errorButton.onclick = showErrorAuditModal;
+        if (historyButton) historyButton.onclick = showChangeHistoryModal;
+    } else {
+        console.error('El elemento #adminSection no se encontró en el DOM.');
+    }
+});
+
+    // Verificar la existencia de los modales al cargar la página
+    console.log('Verificando modales al iniciar:');
+    console.log('backupModal:', document.getElementById('backupModal'));
+    console.log('errorAuditModal:', document.getElementById('errorAuditModal'));
+    console.log('changeHistoryModal:', document.getElementById('changeHistoryModal'));
+
+function showBackupModal() {
+    // Verificar si el modal ya existe y eliminarlo para evitar duplicados
+    let modal = document.getElementById('backupModal');
+    if (modal) {
+        modal.remove();
+    }
+
+    const modalHTML = `
+        <div id="backupModal" class="modal">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-btn" onclick="closeBackupModal(event)">×</span>
+                <h3>Gestión de Backups</h3>
+                <select id="backupSelect">
+                    <option value="">Selecciona un respaldo</option>
+                </select>
+                <button onclick="previewBackup()">Previsualizar</button>
+                <div id="backupPreview" style="display: none;"></div>
+                <button onclick="restoreBackup()">Restaurar Backup Seleccionado</button>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    modal = document.getElementById('backupModal');
+    modal.style.display = 'block';
+    loadBackups();
+}
+
+function showErrorAuditModal() {
+    let modal = document.getElementById('errorAuditModal');
+    if (modal) {
+        modal.remove();
+    }
+
+    const modalHTML = `
+        <div id="errorAuditModal" class="modal">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-btn" onclick="closeErrorAuditModal(event)">×</span>
+                <h3>Auditoría de Errores</h3>
+                <div id="errorAuditList"></div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    modal = document.getElementById('errorAuditModal');
+    modal.style.display = 'block';
+    loadErrorAudit();
+}
+
+function showChangeHistoryModal() {
+    let modal = document.getElementById('changeHistoryModal');
+    if (modal) {
+        modal.remove();
+    }
+
+    const modalHTML = `
+        <div id="changeHistoryModal" class="modal">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-btn" onclick="closeChangeHistoryModal(event)">×</span>
+                <h3>Historial de Cambios</h3>
+                <div id="changeHistoryList"></div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    modal = document.getElementById('changeHistoryModal');
+    modal.style.display = 'block';
+    loadChangeHistory();
+}
+        
+function showAdminSection() {
+    const adminSection = document.getElementById('adminSection');
+    adminSection.style.display = 'flex';
+}
+
+function hideAdminSection() {
+    const adminSection = document.getElementById('adminSection');
+    adminSection.style.display = 'none';
+}
+
+function closeBackupModal(event) {
+    if (event) event.stopPropagation();
+    const modal = document.getElementById('backupModal');
+    if (modal) {
+        console.log('Cerrando backupModal');
+        modal.remove();
+    }
+}
+
+function closeErrorAuditModal(event) {
+    if (event) event.stopPropagation();
+    const modal = document.getElementById('errorAuditModal');
+    if (modal) {
+        console.log('Cerrando errorAuditModal');
+        modal.remove();
+    }
+}
+
+function closeChangeHistoryModal(event) {
+    if (event) event.stopPropagation();
+    const modal = document.getElementById('changeHistoryModal');
+    if (modal) {
+        console.log('Cerrando changeHistoryModal');
+        modal.remove();
+    }
+}
+
+function loadBackups() {
+    fetch('/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=list_backups&authorization=tu_clave_secreta'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+        }
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error('Respuesta del servidor no es un JSON válido: ' + text);
+            }
+        });
+    })
+    .then(data => {
+        const backupSelect = document.getElementById('backupSelect');
+        backupSelect.innerHTML = '<option value="">Selecciona un respaldo</option>';
+
+        if (!data || typeof data !== 'object' || !('success' in data)) {
+            throw new Error('Respuesta inválida del servidor: estructura de datos no válida');
+        }
+
+        if (data.success) {
+            if (!Array.isArray(data.files)) {
+                console.error('data.files no es un array:', data.files);
+                return;
+            }
+
+            data.files.sort((a, b) => b.localeCompare(a));
+            data.files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                option.textContent = file;
+                backupSelect.appendChild(option);
+            });
+
+            if (data.files.length === 0) {
+                backupSelect.innerHTML += '<option value="" disabled>No hay backups disponibles</option>';
+            }
+        } else {
+            console.error('Error del servidor:', data.error);
+            backupSelect.innerHTML += '<option value="" disabled>Error al cargar los backups: ' + (data.error || 'Error desconocido') + '</option>';
+        }
+    })
+    .catch(error => {
+        console.error('Error al cargar backups:', error);
+        const backupSelect = document.getElementById('backupSelect');
+        backupSelect.innerHTML += '<option value="" disabled>Error al cargar los backups: ' + error.message + '</option>';
+    });
+}
+
+function previewBackup() {
+    const backupSelect = document.getElementById('backupSelect');
+    const selectedBackup = backupSelect.value;
+    const previewDiv = document.getElementById('backupPreview');
+
+    // Limpiar y ocultar la previsualización anterior
+    previewDiv.style.display = 'none';
+    previewDiv.innerHTML = '';
+
+    if (!selectedBackup) {
+        return;
+    }
+
+    fetch('/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=preview_backup&backup_file=' + encodeURIComponent(selectedBackup) + '&authorization=tu_clave_secreta'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+        }
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error('Respuesta del servidor no es un JSON válido: ' + text);
+            }
+        });
+    })
+    .then(data => {
+        if (data.success) {
+            if (data.status === 'empty') {
+                previewDiv.innerHTML = '<p>Este respaldo está vacío.</p>';
+            } else if (data.status === 'invalid') {
+                previewDiv.innerHTML = '<p>' + (data.message || 'El archivo contiene datos inválidos.') + '</p>';
+            } else {
+                let html = '';
+                data.data.forEach(db => {
+                    html += `<div class="db-preview">
+                        <h3>${db.name} (${db.id})</h3>
+                        <h4>Tablas:</h4>
+                        ${db.tables.length > 0 ? '<ul>' + db.tables.map(table => `<li>${table.name} (${table.fieldCount} campos, ${table.rowCount} filas)</li>`).join('') + '</ul>' : '<p>No hay tablas.</p>'}
+                        <h4>Vistas:</h4>
+                        ${db.views.length > 0 ? '<ul>' + db.views.map(view => `<li>${view.name} (${view.type})</li>`).join('') + '</ul>' : '<p>No hay vistas.</p>'}
+                    </div>`;
+                });
+                previewDiv.innerHTML = html;
+            }
+            previewDiv.style.display = 'block';
+        } else {
+            previewDiv.innerHTML = '<p>Error: ' + (data.error || 'No se pudo cargar la previsualización.') + '</p>';
+            previewDiv.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+        previewDiv.innerHTML = '<p>Error al cargar la previsualización: ' + error.message + '</p>';
+        previewDiv.style.display = 'block';
+    });
+}
+
+function restoreBackup() {
+    const backupSelect = document.getElementById('backupSelect');
+    const selectedBackup = backupSelect.value;
+
+    if (!selectedBackup || selectedBackup === '') {
+        alert('Por favor, selecciona un backup para restaurar.');
+        return;
+    }
+
+    const backupFile = selectedBackup; // El valor ya incluye el nombre del archivo (por ejemplo, 'backup_17412933396.json')
+    if (!confirm('¿Estás seguro de que deseas restaurar este backup? Esto reemplazará todos los datos actuales.')) {
+        return;
+    }
+
+    console.log('Restaurando backup:', backupFile);
+
+    fetch('/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=restore&backup_file=' + encodeURIComponent(backupFile) + '&authorization=tu_clave_secreta'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Restauración exitosa:', data.message);
+            alert('Backup restaurado con éxito.');
+            closeBackupModal();
             loadFromDatabase(() => {
                 updateDatabaseSelect();
                 updateDatabasesList();
                 renderCurrentView();
             });
-        });
-        
-        document.addEventListener('click', function(e) {
-            const selector = document.getElementById('fieldTypeSelector');
-            if (!selector.contains(e.target) && !e.target.matches('button')) {
-                selector.style.display = 'none';
+        } else {
+            console.error('Error al restaurar:', data.error);
+            alert('Error al restaurar el backup: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+        alert('No hay conexión a internet.');
+    });
+}
+
+function loadErrorAudit() {
+    fetch('/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=load_errors&authorization=tu_clave_secreta'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const errorAuditList = document.getElementById('errorAuditList');
+            if (data.errors.length === 0) {
+                errorAuditList.innerHTML = '<p style="color: #718096;">No hay errores ni advertencias registrados.</p>';
+            } else {
+                errorAuditList.innerHTML = data.errors.map(error => `
+                    <div style="margin-bottom: 0.5rem; padding: 0.5rem; border-radius: 4px; background: ${error.type.includes('warning') ? '#fefcbf' : '#fed7d7'};">
+                        <strong>${error.timestamp}</strong> [${error.type.toUpperCase()}]: ${error.message}
+                    </div>
+                `).join('');
             }
+        } else {
+            alert('Error al cargar el registro de errores: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+        alert('No hay conexión a internet.');
+    });
+}
+
+function loadChangeHistory() {
+    fetch('/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=load_history&authorization=tu_clave_secreta'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const changeHistoryList = document.getElementById('changeHistoryList');
+            changeHistoryList.innerHTML = data.history.map(change => `
+                <div>
+                    <strong>${change.timestamp}</strong>: ${change.description}
+                </div>
+            `).join('');
+        } else {
+            alert('Error al cargar el historial de cambios: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+        alert('No hay conexión a internet.');
+    });
+}
+
+function showFieldVisibilityMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('fieldVisibilityMenu');
+    const button = event.currentTarget;
+    const table = getCurrentTable();
+    if (!table) return;
+
+    // Si el menú ya está visible, ciérralo
+    if (menu.style.display === 'block') {
+        closeFieldVisibilityMenu();
+        return;
+    }
+
+    // Generar los campos visibles dinámicamente
+    const fieldVisibilityList = document.getElementById('fieldVisibilityList');
+    fieldVisibilityList.innerHTML = table.fields.map(field => `
+        <label class="field-visibility">
+            <input type="checkbox" data-field-id="${field.id}" ${table.visibleFields.has(field.id) ? 'checked' : ''}>
+            ${getFieldTypeEmoji(field.type)} ${field.name}
+        </label>
+    `).join('');
+
+    // Posicionar el menú contextual debajo del botón
+    const rect = button.getBoundingClientRect();
+    menu.style.display = 'block';
+    menu.style.top = `${rect.bottom + window.scrollY}px`;
+    menu.style.left = `${rect.left + window.scrollX}px`;
+
+    // Aplicar cambios inmediatamente al hacer clic en un checkbox
+    fieldVisibilityList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            applyFieldVisibilityChanges();
         });
+    });
+
+    // Cerrar el menú contextual al hacer clic fuera
+    document.addEventListener('click', function hideMenu(e) {
+        if (!menu.contains(e.target)) {
+            menu.style.display = 'none';
+            document.removeEventListener('click', hideMenu);
+        }
+    });
+}
+
+function closeFieldVisibilityModal() {
+    const modal = document.querySelector('#fieldVisibilityModal');
+    if (modal) {
+        console.log('Cerrando fieldVisibilityModal');
+        modal.remove();
+    }
+}
+
+document.getElementById('fieldVisibilityBtn').onclick = function(event) {
+    showFieldVisibilityMenu(event);
+};
+        
+function editFieldFromMenu() {
+    const menu = document.getElementById('fieldContextMenu');
+    editField(menu._currentFieldId);
+    menu.style.display = 'none';
+}
+
+function deleteFieldFromMenu() {
+    const menu = document.getElementById('fieldContextMenu');
+    deleteField(menu._currentFieldId);
+    menu.style.display = 'none';
+}
         
     </script>
 </body>
